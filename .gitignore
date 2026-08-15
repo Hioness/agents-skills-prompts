@@ -6,6 +6,11 @@ temp/
 # ── Personal prompts ───────────────────────────────────────────────
 chat-bg-prompts/
 
+# ── Internal agent config ──────────────────────────────────────────
+# AGENTS.md files hold internal configuration. They stay local and
+# are not distributed with this repo. The README is the public face.
+AGENTS.md
+
 # ── Dependencies ───────────────────────────────────────────────────
 node_modules/
 
