@@ -1,0 +1,15 @@
+# ── Scratch / temp ─────────────────────────────────────────────────
+# `temp/` (no leading slash) matches every `temp` directory at any
+# depth: root temp/, skills/*/temp/, forLoops/temp/, nested copies.
+temp/
+
+# ── Personal prompts ───────────────────────────────────────────────
+chat-bg-prompts/
+
+# ── Dependencies ───────────────────────────────────────────────────
+node_modules/
+
+# ── OS / editor junk ───────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log

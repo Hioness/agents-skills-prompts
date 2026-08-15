@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HTML Presentation — Style Guide v2.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-font-smoothing:antialiased}
+
+/* ── TOKENS ── */
+/* Single source of truth: this :root block lives once here and in skeleton.html.
+   The version string is carried directly in the data-version spans and <title>.
+   No hex appears outside :root; see SKILL.md §Token Roles. */
+:root{
+  --bg:  #0d0d0d;
+  --bg2: #141416;
+  --bg3: #1a1a1e;
+  --bg4: #222226;
+  --fg:  #e4e4e7;
+  --fg2: #a1a1aa;
+  --fg3: #71717a;
+
+  --accent:        #2dd4bf;
+  --accent-dim:    #166b57;
+  --accent-bg:     rgba(45,212,191,0.08);
+  --accent-border: rgba(45,212,191,0.30);
+
+  --border: #2a2a2e;
+
+  --green:  #34d399;
+  --red:    #f87171;
+  --blue:   #60a5fa;
+  --yellow: #fbbf24;
+
+  --red-bg:    rgba(248,113,113,0.08);
+  --yellow-bg: rgba(251,191,36,0.08);
+  --green-bg:  rgba(52,211,153,0.08);
+  --blue-bg:   rgba(96,165,250,0.08);
+
+  --hl:    #fcd34d;
+  --hl-bg: rgba(252,211,77,0.15);
+
+  /* Text selection — faint deep teal (v2.1) */
+  --selection: rgba(13,148,136,0.22);
+
+  /* Diagram + print — extracted from one-off hex in v1.x */
+  --num:        #a78bfa;
+  --svg-stroke: #3d3d47;
+  --print-link: #0f766e;
+
+  --mono: 'JetBrains Mono','SF Mono','Fira Code',monospace;
+  --sans: 'Inter','SF Pro Text',system-ui,-apple-system,sans-serif;
+  --radius: 6px;
+
+  --focus: rgba(96,165,250,0.55);
+
+  --print-bg:     #ffffff;
+  --print-fg:     #121212;
+  --print-fg2:    #27272a;
+  --print-fg3:    #52525b;
+  --print-border: #d4d4d8;
+  --print-bg2:    #f4f4f5;
+  --print-bg3:    #fafafa;
+}
+
+/* ── BASE ── */
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+::selection{background:var(--selection);color:var(--fg)}
+::-moz-selection{background:var(--selection);color:var(--fg)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+p{font-size:.9rem;color:var(--fg2);line-height:1.7}
+p+p{margin-top:.6rem}
+h3{font-size:1rem;font-weight:600;margin:1.5rem 0 .75rem;color:var(--fg)}
+h4{font-size:.8rem;font-weight:500;margin:.75rem 0 .4rem;color:var(--fg2);text-transform:uppercase;letter-spacing:.05em}
+code{font-family:var(--mono);font-size:.78rem;background:var(--bg3);padding:.1em .35em;border-radius:3px;color:var(--accent)}
+li{font-size:.9rem;color:var(--fg2);line-height:1.7}
+
+/* ── KBD ── */
+kbd{font-family:var(--mono);font-size:.72rem;background:var(--bg4);padding:2px 6px;border-radius:3px;border:1px solid var(--border);color:var(--fg2);display:inline-block}
+
+/* ── SHELL — collapsible sidebar (v2.1) ───────────────────────
+   The v2.0 horizontal top bar is replaced by a left rail.
+   Grid: .shell = rail + .content (= main → footer).
+   Expanded 260px; one click → 56px slim rail (numbers only).
+   State persists in localStorage (see script). */
+.shell{display:grid;grid-template-columns:260px minmax(0,1fr);width:100%;flex:1;
+  max-width:1360px;margin:0 auto;transition:grid-template-columns .18s ease}
+.content{display:flex;flex-direction:column;min-width:0}
+
+/* ── RAIL — free-floating index (v2.1) ─────────────────────────
+   No background, no separator border — the links float on the page
+   background; the sidebar is conceptual, not a block. Grid rows:
+   title / nav (vertically centered) / meta. */
+.rail{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  display:grid;grid-template-rows:auto 1fr auto;gap:2rem;
+  padding:2.5rem 1.75rem;font-family:var(--mono);
+}
+.rail-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem}
+.rail .nav-title{font-size:.9rem;font-weight:600;letter-spacing:-.01em;color:var(--accent);line-height:1.4}
+.rail-toggle{
+  flex-shrink:0;width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.82rem;color:var(--fg3);
+  background:none;border:none;border-radius:4px;cursor:pointer;transition:color .15s;
+}
+.rail-toggle::before{content:'«'}
+.rail-toggle:hover{color:var(--accent)}
+.rail nav{display:flex;flex-direction:column;gap:.2rem;margin:auto 0}
+.rail nav a{
+  color:var(--fg2);font-size:.78rem;padding:.3rem .55rem;border-radius:4px;
+  display:flex;gap:.55rem;align-items:center;white-space:nowrap;
+  transition:color .15s,background .15s;
+}
+.rail nav a:hover{color:var(--fg);background:var(--bg3);text-decoration:none}
+.rail nav a.active{color:var(--accent);background:var(--accent-bg)}
+.rail nav a .n{color:var(--fg3);font-size:.6rem;flex-shrink:0;opacity:.7}
+.rail-foot{color:var(--fg3);font-size:.6rem;line-height:1.7;white-space:nowrap;overflow:hidden}
+
+/* ── RAIL COLLAPSED — 56px slim rail, numbers only ── */
+.shell.rail-collapsed{grid-template-columns:56px minmax(0,1fr)}
+.shell.rail-collapsed .rail{padding:1.5rem .5rem 2rem;gap:0}
+.shell.rail-collapsed .rail-top{margin-bottom:1.25rem;justify-content:center}
+.shell.rail-collapsed .nav-title{display:none}
+.shell.rail-collapsed .rail-toggle::before{content:'»'}
+.shell.rail-collapsed .rail nav a{padding:.3rem 0;justify-content:center;gap:0}
+.shell.rail-collapsed .rail nav a .n{opacity:1;font-size:.66rem}
+.shell.rail-collapsed .rail nav a .lbl{display:none}
+.shell.rail-collapsed .rail-foot{display:none}
+
+/* ── FOOTER EXPORT BUTTON ── */
+.nav-export-btn{font-family:var(--mono);font-size:.68rem;color:var(--fg3);background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s}
+.nav-export-btn:hover{color:var(--fg);border-color:var(--fg3)}
+.nav-export-btn.primary{color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg)}
+.nav-export-btn.primary:hover{background:rgba(45,212,191,0.14)}
+
+/* ── MAIN ── */
+main{max-width:960px;margin:0 auto;padding:2.5rem 2rem 4rem;width:100%;flex:1}
+section{scroll-margin-top:1rem}
+
+/* ── SECTION HEADERS ── */
+h2{
+  font-size:1.35rem;font-weight:600;
+  margin:2.5rem 0 1rem;padding-bottom:.5rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.5rem;
+}
+h2 .h2-badge{
+  font-size:.62rem;font-weight:500;
+  padding:.15rem .5rem;border-radius:999px;
+  font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;
+}
+h2 .h2-badge.ok    {background:var(--green-bg); color:var(--green)}
+h2 .h2-badge.warn  {background:var(--yellow-bg);color:var(--yellow)}
+h2 .h2-badge.dirty {background:var(--red-bg);   color:var(--red)}
+h2 .h2-badge.info  {background:var(--blue-bg);  color:var(--blue)}
+h2 .h2-badge.new   {background:var(--accent-bg);color:var(--accent)}
+
+/* ── CALLOUTS ── */
+.callout{background:var(--accent-bg);border-left:3px solid var(--accent);padding:.75rem 1rem;border-radius:0 var(--radius) var(--radius) 0;margin:.75rem 0;font-size:.85rem;color:var(--fg2)}
+.callout strong{color:var(--fg);display:block;margin-bottom:.2rem;font-size:.85rem}
+.callout.warn  {border-left-color:var(--yellow);background:var(--yellow-bg)}
+.callout.danger{border-left-color:var(--red);   background:var(--red-bg)}
+.callout.info  {border-left-color:var(--blue);  background:var(--blue-bg)}
+
+/* ── STAT CARDS ── */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin:.75rem 0}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem}
+.stat-card .num{font-size:1.6rem;font-weight:700;font-family:var(--mono);color:var(--accent)}
+.stat-card .label{font-size:.72rem;color:var(--fg3);margin-top:.15rem}
+
+/* ── ENTITY CARD ── */
+.entity-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem}
+.entity-card h3{margin:0 0 .2rem;font-size:1rem;display:flex;align-items:center;gap:.5rem}
+.entity-card .ec-path{font-family:var(--mono);font-size:.72rem;color:var(--fg3);margin-bottom:.75rem}
+.entity-card.active{border-left:3px solid var(--accent)}
+
+/* ── TAGS ── */
+.tag{display:inline-block;font-size:.67rem;font-weight:500;padding:.1rem .45rem;border-radius:3px;font-family:var(--mono)}
+.tag.deliverable{background:var(--green-bg); color:var(--green)}
+.tag.temp       {background:var(--yellow-bg);color:var(--yellow)}
+.tag.debate     {background:var(--blue-bg);  color:var(--blue)}
+.tag.remove     {background:var(--red-bg);   color:var(--red)}
+.tag.done       {background:var(--accent-bg);color:var(--accent)}
+
+/* ── INLINE HIGHLIGHT ── */
+.hl{background:var(--hl-bg);color:var(--hl);padding:.1em .3em;border-radius:3px;font-weight:500}
+
+/* ── FILE LIST ── */
+.file-list{list-style:none;padding:0;margin:.5rem 0}
+.file-list li{padding:.3rem 0;display:flex;align-items:center;gap:.5rem;font-size:.85rem;border-bottom:1px solid transparent}
+.file-list li:hover{background:var(--bg3);border-radius:3px;padding-left:.3rem;margin-left:-.3rem}
+.file-list li .fl-icon{width:1.2rem;text-align:center;flex-shrink:0}
+
+/* ── ACTION LIST ── */
+.action-list{list-style:none;padding:0;margin:.5rem 0}
+.action-list li{padding:.35rem 0;padding-left:1.25rem;position:relative;font-size:.85rem;color:var(--fg2);line-height:1.5}
+.action-list li::before{content:'';position:absolute;left:0;top:.65rem;width:7px;height:7px;border-radius:50%}
+.action-list li.move::before  {background:var(--yellow)}
+.action-list li.create::before{background:var(--green)}
+.action-list li.remove::before{background:var(--red)}
+.action-list li.ask::before   {background:var(--blue)}
+.action-list li.done::before  {background:var(--accent)}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:1.5rem;flex-wrap:wrap;margin:.5rem 0 1rem;padding:.65rem 1rem;background:var(--bg3);border-radius:var(--radius);font-size:.78rem;color:var(--fg2)}
+.legend-item{display:flex;align-items:center;gap:.4rem}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+/* ── ANALYSIS GRID ── */
+.analysis{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.75rem 0}
+.analysis-col ul{list-style:none;display:flex;flex-direction:column;gap:.35rem;padding:0;margin:.3rem 0}
+.analysis-col li{font-size:.85rem;color:var(--fg2);padding-left:1.1rem;position:relative;line-height:1.5}
+.analysis-col li::before{position:absolute;left:0;font-family:var(--mono);font-weight:700}
+.analysis-col.pros h4{color:var(--green)}
+.analysis-col.cons h4{color:var(--red)}
+.analysis-col.pros li::before{content:'+';color:var(--green)}
+.analysis-col.cons li::before{content:'−';color:var(--red)}
+
+/* ── RECOMMENDATION ── */
+.recommendation{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.25rem;margin:1rem 0}
+.recommendation h3{font-size:.9rem;font-weight:600;color:var(--accent);margin:0 0 .4rem}
+.recommendation p{font-size:.85rem;color:var(--fg2);line-height:1.7}
+.recommendation p+p{margin-top:.5rem}
+
+/* ── OPTION HEADER ── */
+.option-header{display:flex;align-items:baseline;gap:.65rem;margin:1.5rem 0 .5rem}
+.option-num{font-family:var(--mono);font-size:.72rem;color:var(--accent);font-weight:500;flex-shrink:0}
+.option-title{font-size:1rem;font-weight:600;color:var(--fg);letter-spacing:-.01em}
+
+/* ── DEMO AREA ── */
+.demo-area{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin:.75rem 0;position:relative}
+.demo-label{position:absolute;top:.65rem;left:.85rem;font-family:var(--mono);font-size:.6rem;color:var(--fg3);text-transform:uppercase;letter-spacing:.1em}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:.67rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;border:1px solid}
+.badge .bd{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.badge.added   {color:var(--green); background:var(--green-bg); border-color:rgba(52,211,153,0.2)}
+.badge.removed {color:var(--red);   background:var(--red-bg);   border-color:rgba(248,113,113,0.2)}
+.badge.modified{color:var(--blue);  background:var(--blue-bg);  border-color:rgba(96,165,250,0.2)}
+.badge.pending {color:var(--yellow);background:var(--yellow-bg);border-color:rgba(251,191,36,0.2)}
+.badge.draft   {color:var(--fg3);   background:var(--bg4);      border-color:var(--border)}
+.badge.breaking{color:var(--red);   background:var(--red-bg);   border-color:rgba(248,113,113,0.35);font-weight:700}
+
+/* ── CODE BLOCKS ── */
+/* v2.0: Default illustrative code is plain <pre><code> in --fg, zero markup tax.
+   Line numbers are opt-in for diffs and line-referenced reviews.
+   Per-token spans (.kw/.fn/.str/.cmt/.num/.op) still styled, but not required. */
+.code-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-family:var(--mono);font-size:.78rem;line-height:1.55;margin:.75rem 0}
+.code-block-header{display:flex;align-items:center;justify-content:space-between;padding:.4rem .75rem;background:var(--bg4);border-bottom:1px solid var(--border)}
+.code-block-lang{font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3)}
+.cb-copy{font-family:var(--mono);font-size:.65rem;color:var(--fg3);background:none;border:1px solid var(--border);border-radius:3px;padding:2px 8px;cursor:pointer;transition:color .15s,border-color .15s}
+.cb-copy:hover{color:var(--fg);border-color:var(--fg3)}
+.code-block-body{padding:.75rem 1rem;white-space:pre;overflow-x:auto;color:var(--fg);font-family:var(--mono);line-height:1.55}
+/* Opt-in per-line structure for code that is referenced by line number */
+.cl{display:flex}.cl:hover{background:var(--bg4)}
+.ln{width:40px;flex-shrink:0;padding:0 .5rem;text-align:right;color:var(--fg3);user-select:none;border-right:1px solid var(--border)}
+.lc{padding:0 1rem;white-space:pre;color:var(--fg)}
+/* Legacy/in-band syntax classes — opt-in, not required for plain <pre><code> */
+.kw{color:var(--blue)}.fn{color:var(--accent)}.str{color:var(--green)}.cmt{color:var(--fg3);font-style:italic}.num{color:var(--num)}.op{color:var(--fg2)}
+
+/* ── DIFF BLOCK — preserves dual numbers (only justified location in v2.0) */
+.diff-block{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-family:var(--mono);font-size:.78rem;line-height:1.55;margin:.75rem 0}
+.diff-header{display:flex;align-items:center;justify-content:space-between;padding:.4rem .75rem;background:var(--bg4);border-bottom:1px solid var(--border)}
+.diff-filename{font-size:.8rem;color:var(--fg)}
+.diff-stats{display:flex;gap:.75rem;font-size:.72rem}
+.ds-a{color:var(--green)}.ds-d{color:var(--red)}
+.diff-hunk{padding:2px .75rem;background:var(--blue-bg);color:var(--blue);font-size:.72rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.dl{display:flex;align-items:stretch}
+.dl-nums{display:flex;flex-shrink:0;user-select:none}
+.dl-num{width:36px;padding:0 .4rem;text-align:right;color:var(--fg3);border-right:1px solid var(--border)}
+.dl-gut{width:22px;flex-shrink:0;text-align:center;border-right:1px solid var(--border);font-weight:700;padding:0 3px}
+.dl-content{padding:0 .75rem;white-space:pre;flex:1}
+.dl.add{background:var(--green-bg)}.dl.add .dl-gut{color:var(--green)}.dl.add .dl-content{color:var(--fg)}
+.dl.del{background:var(--red-bg)}.dl.del .dl-gut{color:var(--red)}.dl.del .dl-content{color:var(--fg)}
+.dl.ctx .dl-gut{color:var(--fg3)}.dl.ctx .dl-content{color:var(--fg2)}
+.di-add{background:rgba(52,211,153,0.25);border-radius:2px}
+.di-del{background:rgba(248,113,113,0.25);border-radius:2px;text-decoration:line-through}
+
+/* ── FILE TREE ── */
+.file-tree{font-family:var(--mono);font-size:.8rem;line-height:1.8;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin:.75rem 0}
+.ft-row{display:flex;align-items:center;gap:.4rem;padding:1px 0;color:var(--fg2)}
+.ft-row:hover{color:var(--fg)}
+.ft-row.dir .ft-n{color:var(--accent);font-weight:500}
+.ft-row.add .ft-n{color:var(--green)}
+.ft-row.del .ft-n{color:var(--red);text-decoration:line-through}
+.ft-row.mod .ft-n{color:var(--blue)}
+.ft-badge{font-size:.6rem;padding:0 5px;border-radius:2px;margin-left:auto}
+.ft-badge.add{background:var(--green-bg);color:var(--green)}
+.ft-badge.del{background:var(--red-bg);  color:var(--red)}
+.ft-badge.mod{background:var(--blue-bg); color:var(--blue)}
+
+/* ── TABLES ── */
+.table-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:.75rem 0}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{text-align:left;padding:.55rem .75rem;background:var(--bg3);border-bottom:2px solid var(--border);font-weight:600;color:var(--fg);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+td{padding:.5rem .75rem;border-bottom:1px solid var(--border);color:var(--fg2);vertical-align:top}
+td.mono{font-family:var(--mono);font-size:.78rem;color:var(--fg)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3)}
+
+/* ── PLAN ── */
+.plan{display:flex;flex-direction:column}
+.plan-step{display:flex;gap:1rem}
+.plan-ind{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.plan-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.62rem;color:var(--fg3);flex-shrink:0;z-index:1}
+.plan-dot.done  {border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.plan-dot.active{border-color:var(--accent);background:var(--accent-bg);color:var(--accent)}
+.plan-line{width:1px;flex:1;background:var(--border);margin:2px auto;min-height:20px}
+.plan-body{padding-bottom:1.25rem;flex:1}
+.plan-title{font-size:.875rem;font-weight:600;color:var(--fg);margin-bottom:.2rem;padding-top:1px}
+.plan-step.done-step .plan-title{color:var(--fg3)}
+.plan-desc{font-size:.82rem;color:var(--fg2);line-height:1.6}
+
+/* ── SVG ── */
+.diagram-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;overflow-x:auto;margin:.75rem 0}
+.diagram-svg{width:100%;height:auto;display:block;min-width:520px}
+
+/* ── TYPE/SPACE SWATCH ── */
+.type-row{display:flex;align-items:baseline;gap:1.5rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.type-meta{width:150px;flex-shrink:0}
+.type-label{font-family:var(--mono);font-size:.65rem;color:var(--fg3);display:block}
+.type-spec {font-family:var(--mono);font-size:.6rem; color:var(--fg3);display:block;margin-top:2px}
+.space-row{display:flex;align-items:center;gap:1rem;margin:.3rem 0}
+.space-meta{font-family:var(--mono);font-size:.68rem;color:var(--fg3);width:130px;flex-shrink:0}
+.space-bar{height:8px;background:var(--accent);border-radius:2px;opacity:.65}
+.space-use{font-family:var(--mono);font-size:.62rem;color:var(--fg3)}
+.swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.6rem;margin:.75rem 0}
+.swatch{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.swatch-color{height:44px}
+.swatch-info{padding:.4rem .6rem;background:var(--bg3)}
+.swatch-name{font-family:var(--mono);font-size:.7rem;color:var(--fg);display:block}
+.swatch-val {font-family:var(--mono);font-size:.62rem;color:var(--fg3);display:block;margin-top:2px}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;color:var(--fg3);font-size:.75rem}
+.footer-actions{display:flex;gap:.5rem}
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  main{padding:1.5rem 1rem 3rem}
+  .swatch-grid{grid-template-columns:1fr 1fr}
+  .type-row{flex-direction:column;gap:.3rem}
+  .type-meta{width:auto}
+  .space-use{display:none}
+  .analysis{grid-template-columns:1fr}
+}
+
+/* ── MOBILE — rail becomes a static chip row above content ── */
+@media(max-width:860px){
+  .shell,.shell.rail-collapsed{grid-template-columns:1fr}
+  .rail,.shell.rail-collapsed .rail{
+    position:static;height:auto;overflow:visible;
+    border-right:none;border-bottom:1px solid var(--border);
+    padding:.75rem 1rem;align-items:stretch;
+  }
+  .rail-top,.shell.rail-collapsed .rail-top{justify-content:space-between;margin-bottom:.6rem}
+  .rail .nav-title,.shell.rail-collapsed .nav-title{display:block}
+  .rail-toggle{display:none}
+  .rail nav,.shell.rail-collapsed .rail nav{flex-direction:row;flex-wrap:wrap;gap:.35rem;margin:0}
+  .rail nav a,.shell.rail-collapsed .rail nav a{
+    padding:.22rem .5rem;justify-content:flex-start;gap:.4rem;
+    border:1px solid var(--border);border-radius:var(--radius);
+  }
+  .rail nav a .n,.shell.rail-collapsed .rail nav a .n{opacity:.7;font-size:.58rem}
+  .rail nav a .lbl,.shell.rail-collapsed .rail nav a .lbl{display:inline}
+  .rail-foot,.shell.rail-collapsed .rail-foot{display:none}
+  main{padding:1.5rem 1rem 3rem}
+}
+
+/* ── REDUCED MOTION ── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none !important;scroll-behavior:auto !important}
+}
+
+/* ── PRINT ── */
+/* Minimal block — lives once in the skeleton, handles white-on-paper for all
+   skeleton-derived pages. Tints bumped to 12–16% — 8% is near-invisible on white.
+   Base 8% on dark is intentional: darker background compensates; print bump is
+   its known consequence, not a contradiction (see SKILL.md §Print).  */
+@media print{
+  html,body{background:var(--print-bg) !important;color:var(--print-fg) !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+  .rail,footer .footer-actions{display:none !important}
+  .shell{display:block;max-width:none;margin:0}
+  main{max-width:none;margin:0;padding:0}
+  a{color:var(--print-link) !important;text-decoration:none !important}
+  p,li,td{color:var(--print-fg2) !important}
+  h2,h3,h4,th,.diff-filename,.plan-title{color:var(--print-fg) !important}
+  code,.ec-path,.badge,.tag{color:var(--print-fg3) !important}
+  .entity-card,.stat-card,.table-wrap,.code-block,.diff-block,.file-tree,.legend,.diagram-wrap,.demo-area{background:var(--print-bg) !important;border-color:var(--print-border) !important}
+  .code-block-header,.diff-header,th{background:var(--print-bg2) !important}
+  code,.file-tree,.swatch-info{background:var(--print-bg3) !important}
+  .callout        {background:rgba(45,212,191,0.14) !important;border-left-color:var(--accent) !important}
+  .callout.info   {background:rgba(96,165,250,0.14) !important;border-left-color:var(--blue) !important}
+  .callout.warn   {background:rgba(251,191,36,0.16) !important;border-left-color:var(--yellow) !important}
+  .callout.danger {background:rgba(248,113,113,0.16) !important;border-left-color:var(--red) !important}
+  .recommendation {background:rgba(45,212,191,0.10) !important;border-color:rgba(45,212,191,0.40) !important}
+  .hl             {background:rgba(252,211,77,0.16) !important;color:var(--print-fg) !important}
+  .diff-hunk      {background:rgba(96,165,250,0.14) !important}
+  .dl.add         {background:rgba(52,211,153,0.12) !important}
+  .dl.del         {background:rgba(248,113,113,0.12) !important}
+  tr:hover td,.cl:hover{background:transparent !important}
+  section,.entity-card,.table-wrap,.code-block,.diff-block,.diagram-wrap,.recommendation{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+<aside class="rail">
+  <div class="rail-top">
+    <span class="nav-title">html-presentation / style-guide</span>
+    <button class="rail-toggle" id="railToggle" aria-expanded="true" aria-controls="railNav" aria-label="Collapse sidebar" title="Collapse sidebar"></button>
+  </div>
+  <nav id="railNav">
+    <a href="#overview"   class="nav-link"><span class="n">00</span><span class="lbl">Overview</span></a>
+    <a href="#tokens"     class="nav-link"><span class="n">01</span><span class="lbl">Colors</span></a>
+    <a href="#type"       class="nav-link"><span class="n">02</span><span class="lbl">Type</span></a>
+    <a href="#spacing"    class="nav-link"><span class="n">03</span><span class="lbl">Spacing</span></a>
+    <a href="#layout"     class="nav-link"><span class="n">04</span><span class="lbl">Layout</span></a>
+    <a href="#code"       class="nav-link"><span class="n">05</span><span class="lbl">Code</span></a>
+    <a href="#diffs"      class="nav-link"><span class="n">06</span><span class="lbl">Diffs</span></a>
+    <a href="#cards"      class="nav-link"><span class="n">07</span><span class="lbl">Cards</span></a>
+    <a href="#tags"       class="nav-link"><span class="n">08</span><span class="lbl">Tags</span></a>
+    <a href="#decisions"  class="nav-link"><span class="n">09</span><span class="lbl">Decisions</span></a>
+    <a href="#tables"     class="nav-link"><span class="n">10</span><span class="lbl">Tables</span></a>
+    <a href="#rules"      class="nav-link"><span class="n">11</span><span class="lbl">Rules</span></a>
+  </nav>
+  <div class="rail-foot">
+    <span data-version>v2.1 · 2026-07-17</span><br/>collapsible sidebar
+  </div>
+</aside>
+
+<div class="content">
+<main>
+
+<!-- ── OVERVIEW ─────────────────────────────────────────────── -->
+<section id="overview">
+<h2>Overview <span class="h2-badge info">v2.1</span></h2>
+
+<p>Single-file dark HTML documents for presenting complex technical output: specs, plans, code reviews, research synthesis, prototypes. This document is the canonical implementation — every component shown can be copied as-is. Token names live in <code>skeleton.html</code> and in this file's <code>:root</code> as the single source of truth for values; behavioural and construction rules live in <code>SKILL.md</code>. Visual law lives here; construction and shell behaviour live in the skill text and are referenced in Writing Rules. Depth hierarchy defaults to 4 levels (<code>--bg</code>→<code>--bg2</code>→<code>--bg3</code>→<code>--bg4</code>): use 2–5 as needed.</p>
+
+<div class="callout">
+  <strong>Changelog — v2.1, v2.0, v1.6, v1.5, v1.4, v1.3</strong>
+  <strong>v2.1</strong>: top bar replaced with a collapsible left index — borderless and free-floating (no rail block, no separator), 260px column; one click to a 56px slim rail (numbers only) that keeps the active-section highlight; state persists in <code>localStorage</code>. Title wraps to multiple lines; section list vertically centered. Numbered section index added (<code>00–11</code>). <code>scroll-margin-top</code> 4rem→1rem (no sticky top bar). Index becomes a static chip row under 860px.
+  <strong>v2.0</strong>: restructured into three layers (skeleton.html shell, this style-guide component reference, SKILL.md law). Introduced <code>template.html</code> as the copy-start — one marked CONTENT block. Tokens: <code>--svg-stroke</code>, <code>--print-link</code>, <code>--num</code> extracted from one-off hex. <code>--green</code> shifted to <code>#34d399</code> (farther from <code>--accent</code> <code>#2dd4bf</code>). Nav is always-visible; the rAF hide-on-scroll tracker removed. Default illustrative code is plain <code>&lt;pre&gt;&lt;code&gt;</code>; line numbers opt-in for diffs and line-referenced reviews. Vocabulary violations fixed.
+  <strong>v1.6</strong>: added <code>.hl</code> inline highlight — <code>--hl</code> token (<code>#fcd34d</code> amber) at 15% fill for one load-bearing phrase per paragraph.
+  <strong>v1.5</strong>: export shell — exactly one document-level export in footer: <strong>copy markdown</strong> (recursive walker). Nav meta is version/date only.
+  <strong>v1.4</strong>: nav hide removed in v2.0 (previously: hide-on-scroll with rAF throttle).
+  <strong>v1.3</strong>: <code>.analysis</code>, <code>.recommendation</code>, <code>.option-header</code>, <code>kbd</code>, <code>.demo-area</code> components. Bug fixes: <code>--focus</code> wired, print 8%→14–16%.
+</div>
+
+<div class="summary-grid">
+  <div class="stat-card"><div class="num">19</div><div class="label">Component types defined</div></div>
+  <div class="stat-card"><div class="num">3</div><div class="label">Layers (roles only)</div></div>
+  <div class="stat-card"><div class="num">1</div><div class="label">Template (copy-start)</div></div>
+  <div class="stat-card"><div class="num">2</div><div class="label">Font families (hard limit)</div></div>
+</div>
+</section>
+
+<!-- ── COLOR TOKENS ──────────────────────────────────────────── -->
+<section id="tokens">
+<h2>Color Tokens <span class="h2-badge ok">canonical</span></h2>
+
+<div class="callout warn">
+  <strong>Use these names exactly.</strong> Token names are the implementation standard. Inventing aliases or one-off hex values breaks consistency across documents.
+</div>
+
+<h4>Backgrounds — depth hierarchy (default 4, flex 2–5)</h4>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-color" style="background:var(--bg)"></div><div class="swatch-info"><span class="swatch-name">--bg</span><span class="swatch-val">#0d0d0d · page body</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--bg2)"></div><div class="swatch-info"><span class="swatch-name">--bg2</span><span class="swatch-val">#141416 · rail, entity cards</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--bg3)"></div><div class="swatch-info"><span class="swatch-name">--bg3</span><span class="swatch-val">#1a1a1e · code blocks, tables, legend</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--bg4)"></div><div class="swatch-info"><span class="swatch-name">--bg4</span><span class="swatch-val">#222226 · code headers, hover states</span></div></div>
+</div>
+
+<h4>Text — legibility hierarchy</h4>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-color" style="background:var(--fg)"></div><div class="swatch-info"><span class="swatch-name">--fg</span><span class="swatch-val">#e4e4e7 · headings, emphasis, code</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--fg2)"></div><div class="swatch-info"><span class="swatch-name">--fg2</span><span class="swatch-val">#a1a1aa · body prose, table cells</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--fg3)"></div><div class="swatch-info"><span class="swatch-name">--fg3</span><span class="swatch-val">#71717a · line nums, labels, meta</span></div></div>
+</div>
+
+<h4>Accent</h4>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-color" style="background:var(--accent)"></div><div class="swatch-info"><span class="swatch-name">--accent</span><span class="swatch-val">#2dd4bf · links, nav title, active states (was #22d3a0, moved in v2.0 for hue separation from --green)</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--accent-dim)"></div><div class="swatch-info"><span class="swatch-name">--accent-dim</span><span class="swatch-val">#166b57 · accent text on dark bg</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--accent-bg)"></div><div class="swatch-info"><span class="swatch-name">--accent-bg</span><span class="swatch-val">rgba(45,212,191,0.08) · callout and badge fills</span></div></div>
+</div>
+
+<h4>Structural</h4>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-color" style="background:var(--border)"></div><div class="swatch-info"><span class="swatch-name">--border</span><span class="swatch-val">#2a2a2e · all dividers and card borders</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--focus)"></div><div class="swatch-info"><span class="swatch-name">--focus</span><span class="swatch-val">rgba(96,165,250,0.55) · keyboard focus ring</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--svg-stroke)"></div><div class="swatch-info"><span class="swatch-name">--svg-stroke</span><span class="swatch-val">#3d3d47 · diagram arrows and neutral strokes (v2.0 — extracted from one-off)</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--print-link)"></div><div class="swatch-info"><span class="swatch-name">--print-link</span><span class="swatch-val">#0f766e · print link (v2.0 — extracted from one-off)</span></div></div>
+</div>
+
+<h4>Semantic — reserved for state and diff only</h4>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-color" style="background:var(--green)"></div><div class="swatch-info"><span class="swatch-name">--green</span><span class="swatch-val">#34d399 · additions, success, deliverable, pros (was #4ade80, shifted for separation)</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--red)"></div><div class="swatch-info"><span class="swatch-name">--red</span><span class="swatch-val">#f87171 · deletions, errors, breaking, cons</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--blue)"></div><div class="swatch-info"><span class="swatch-name">--blue</span><span class="swatch-val">#60a5fa · info, hunk headers, debate</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--yellow)"></div><div class="swatch-info"><span class="swatch-name">--yellow</span><span class="swatch-val">#fbbf24 · warnings, pending, temp</span></div></div>
+</div>
+<p style="margin-top:.75rem">Each semantic color has a matching <code>--green-bg</code> / <code>--red-bg</code> / <code>--blue-bg</code> / <code>--yellow-bg</code> variant at 8% opacity for fills.</p>
+
+<h4>Highlight</h4>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-color" style="background:var(--hl)"></div><div class="swatch-info"><span class="swatch-name">--hl</span><span class="swatch-val">#fcd34d · inline text emphasis</span></div></div>
+  <div class="swatch"><div class="swatch-color" style="background:var(--hl-bg)"></div><div class="swatch-info"><span class="swatch-name">--hl-bg</span><span class="swatch-val">rgba(252,211,77,0.15) · highlight fill</span></div></div>
+</div>
+
+<h4>Syntax one-offs turned into tokens (v2.0)</h4>
+<div class="swatch-grid">
+  <div class="swatch"><div class="swatch-color" style="background:var(--num)"></div><div class="swatch-info"><span class="swatch-name">--num</span><span class="swatch-val">#a78bfa · number literals (was #c084fc one-off)</span></div></div>
+</div>
+</section>
+
+<!-- ── TYPOGRAPHY ─────────────────────────────────────────────── -->
+<section id="type">
+<h2>Typography <span class="h2-badge ok">2 faces</span></h2>
+<p>Two faces, hard limit. <code>Inter</code> for all prose. <code>JetBrains Mono</code> for everything structural: code, metadata, labels, line numbers, nav titles, tags, badges, option numbers, keyboard shortcuts.</p>
+
+<div class="type-row"><div class="type-meta"><span class="type-label">Page section title</span><span class="type-spec">Inter 600 / 1.35rem / border-bottom</span></div><span style="font-size:1.35rem;font-weight:600;color:var(--fg)">Migration Plan</span></div>
+<div class="type-row"><div class="type-meta"><span class="type-label">Card / entity title</span><span class="type-spec">Inter 600 / 1rem</span></div><span style="font-size:1rem;font-weight:600;color:var(--fg)">📂 agent/config.py</span></div>
+<div class="type-row"><div class="type-meta"><span class="type-label">Sub-heading (h4)</span><span class="type-spec">Inter 500 / .8rem / uppercase / +.05em</span></div><span style="font-size:.8rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--fg2)">Proposed Actions</span></div>
+<div class="type-row"><div class="type-meta"><span class="type-label">Body prose</span><span class="type-spec">Inter 400 / .9rem / --fg2 / 1.7 lh</span></div><span style="font-size:.9rem;color:var(--fg2);line-height:1.7">The migration requires a read-only window of ~2 minutes during the schema transition.</span></div>
+<div class="type-row"><div class="type-meta"><span class="type-label">Rail title</span><span class="type-spec">Mono 600 / .9rem / --accent</span></div><span style="font-family:var(--mono);font-size:.9rem;font-weight:600;color:var(--accent)">repo / spring-clean</span></div>
+<div class="type-row"><div class="type-meta"><span class="type-label">Option number</span><span class="type-spec">Mono 500 / .72rem / --accent</span></div><span style="font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--accent)">01</span></div>
+<div class="type-row"><div class="type-meta"><span class="type-label">Code / tag / badge</span><span class="type-spec">Mono 400–700 / .67–.78rem</span></div><code>src/agent/config.py</code></div>
+<div class="type-row"><div class="type-meta"><span class="type-label">Keyboard shortcut</span><span class="type-spec">Mono 400 / .72rem / --bg4 bg / --border</span></div><kbd>⌘K</kbd> <kbd>Shift</kbd> + <kbd>P</kbd></div>
+<div class="type-row" style="border:none"><div class="type-meta"><span class="type-label">Meta / caption</span><span class="type-spec">Mono 400 / .72rem / --fg3</span></div><span style="font-family:var(--mono);font-size:.72rem;color:var(--fg3)">v2.1 · 2026-07-17</span></div>
+</section>
+
+<!-- ── SPACING ─────────────────────────────────────────────────── -->
+<section id="spacing">
+<h2>Spacing</h2>
+<div class="space-row"><span class="space-meta">4px  · .3rem</span><div class="space-bar" style="width:4px"></div><span class="space-use">inline gaps, icon→text, dot→label</span></div>
+<div class="space-row"><span class="space-meta">8px  · .5rem</span><div class="space-bar" style="width:8px"></div><span class="space-use">badge padding, button padding</span></div>
+<div class="space-row"><span class="space-meta">12px · .75rem</span><div class="space-bar" style="width:12px"></div><span class="space-use">callout padding v, table cell, code header</span></div>
+<div class="space-row"><span class="space-meta">16px · 1rem</span><div class="space-bar" style="width:16px"></div><span class="space-use">card padding, code block padding</span></div>
+<div class="space-row"><span class="space-meta">20px · 1.25rem</span><div class="space-bar" style="width:20px"></div><span class="space-use">entity card padding, recommendation</span></div>
+<div class="space-row"><span class="space-meta">32px · 2rem</span><div class="space-bar" style="width:32px"></div><span class="space-use">main horizontal padding, demo-area padding</span></div>
+<div class="space-row"><span class="space-meta">40px · 2.5rem</span><div class="space-bar" style="width:40px"></div><span class="space-use">main top padding</span></div>
+<div class="space-row"><span class="space-meta">64px · 4rem</span><div class="space-bar" style="width:64px"></div><span class="space-use">main bottom padding, scroll-margin-top</span></div>
+</section>
+
+<!-- ── LAYOUT ──────────────────────────────────────────────────── -->
+<section id="layout">
+<h2>Layout <span class="h2-badge info">collapsible sidebar</span></h2>
+<p>Collapsible left sidebar — the v2.0 horizontal top bar is gone. The index is <strong>free-floating</strong>: no rail background, no separator border — the links sit directly on the page background, so the sidebar is conceptual, not a block. The rail is <code>position: sticky</code> at <code>260px</code>; the title wraps when it is long, and the section list is vertically centered in the viewport. One click on the <code>«</code> toggle collapses it to a <code>56px</code> slim rail that keeps the numbered index and the active-section highlight. State persists in <code>localStorage</code>. Layout is a grid: <code>.shell</code> = <code>rail + (.content = main → footer)</code>; the content column stays centered at <code>max-width: 960px</code>. With no sticky top bar, <code>scroll-margin-top</code> drops to <code>1rem</code>. Under <code>860px</code> the rail becomes a static chip row above the content. SVG diagrams use <code>.diagram-svg</code> with <code>min-width: 520px</code> so they scroll horizontally on narrow screens rather than downscaling.</p>
+
+<div class="callout info">
+  <strong>Export shell + collapse heuristic</strong>
+  Rail meta is version/date only — never export buttons. Exactly one document-level export lives in the footer: <strong>copy markdown</strong> (recursive walker). Component-local <code>copy</code> buttons on code blocks remain allowed; they are not document export. Collapse the rail when the reading column needs room — the slim rail still shows which section is active.
+</div>
+
+<div class="diagram-wrap">
+<svg class="diagram-svg" viewBox="0 0 600 270" xmlns="http://www.w3.org/2000/svg" style="min-width:520px">
+<defs><style>.dg{font-family:'JetBrains Mono',monospace;font-size:11px;fill:var(--fg3)}.dg-sm{font-family:'JetBrains Mono',monospace;font-size:9px;fill:var(--fg3)}.dg-ac{font-family:'JetBrains Mono',monospace;font-size:9px;fill:var(--accent)}</style></defs>
+
+<!-- EXPANDED — 260px floating index + content column -->
+<rect x="10" y="10" width="580" height="100" rx="6" fill="none" stroke="var(--border)"/>
+<rect x="10" y="10" width="150" height="100" rx="6" fill="none" stroke="var(--svg-stroke)" stroke-dasharray="4 3"/>
+<text x="24" y="23" class="dg" style="fill:var(--accent);font-weight:600">skill / style-guide</text>
+<text x="143" y="24" text-anchor="middle" class="dg-sm">«</text>
+<text x="24" y="52" class="dg-sm">00 Overview</text>
+<text x="24" y="62" class="dg-sm">01 Colors</text>
+<text x="24" y="72" class="dg-sm">02 Type</text>
+<text x="24" y="82" class="dg-sm">03 Layout</text>
+<text x="24" y="92" class="dg-sm">04 Diffs</text>
+<rect x="160" y="10" width="430" height="100" fill="var(--bg)"/>
+<rect x="300" y="20" width="250" height="80" rx="4" fill="none" stroke="var(--border)" stroke-dasharray="4 3"/>
+<text x="425" y="32" text-anchor="middle" class="dg-sm">max-width 960px · centered</text>
+<rect x="312" y="42" width="140" height="8" rx="3" fill="var(--border)"/>
+<rect x="312" y="56" width="226" height="1" fill="var(--border)"/>
+<rect x="312" y="64" width="200" height="5" rx="2" fill="var(--bg3)"/>
+<rect x="312" y="74" width="170" height="5" rx="2" fill="var(--bg3)"/>
+<text x="24" y="124" class="dg-ac">expanded · 260px · no background</text>
+<text x="460" y="124" text-anchor="middle" class="dg-sm">one click</text>
+
+<!-- COLLAPSED — 56px slim floating index + full-width content -->
+<rect x="10" y="140" width="580" height="100" rx="6" fill="none" stroke="var(--border)"/>
+<rect x="10" y="140" width="46" height="100" rx="6" fill="none" stroke="var(--svg-stroke)" stroke-dasharray="4 3"/>
+<text x="33" y="163" text-anchor="middle" class="dg-sm">»</text>
+<text x="33" y="182" text-anchor="middle" class="dg-sm">00</text>
+<text x="33" y="196" text-anchor="middle" class="dg-sm">01</text>
+<text x="33" y="210" text-anchor="middle" class="dg-sm">02</text>
+<text x="33" y="224" text-anchor="middle" class="dg-sm">03</text>
+<rect x="56" y="140" width="534" height="100" fill="var(--bg)"/>
+<rect x="300" y="150" width="250" height="80" rx="4" fill="none" stroke="var(--border)" stroke-dasharray="4 3"/>
+<text x="425" y="162" text-anchor="middle" class="dg-sm">max-width 960px · centered (full width)</text>
+<rect x="312" y="172" width="160" height="8" rx="3" fill="var(--border)"/>
+<rect x="312" y="186" width="226" height="1" fill="var(--border)"/>
+<rect x="312" y="194" width="210" height="5" rx="2" fill="var(--bg3)"/>
+<rect x="312" y="204" width="180" height="5" rx="2" fill="var(--bg3)"/>
+<text x="24" y="256" class="dg-ac">collapsed · 56px · numbers only</text>
+</svg>
+</div>
+</section>
+
+<!-- ── CODE BLOCKS ────────────────────────────────────────────── -->
+<section id="code">
+<h2>Code Blocks <span class="h2-badge ok">plain by default</span></h2>
+<p>In v2.0, illustrative code is plain <code>&lt;pre&gt;&lt;code&gt;</code> in <code>var(--fg)</code>. Zero extra markup. <code>&lt;code&gt;</code> gets <code>var(--accent)</code> when inline. Line numbers are now opt-in — for diffs and line-referenced reviews that actually need them. The per-block <code>copy</code> control is component-local clipboard, not the document export.</p>
+
+<div class="code-block">
+  <div class="code-block-header">
+    <span class="code-block-lang">python (plain)</span>
+    <button class="cb-copy" onclick="copyCode(this)">copy</button>
+  </div>
+<pre class="code-block-body"><code>from pathlib import Path
+from typing  import Optional
+
+# Load configuration from environment
+def load_config(env_path: Path) -> Optional[dict]:
+    if not env_path.exists():
+        raise FileNotFoundError(f"No env at {env_path}")
+    return {k: v for k, v in __import__('os').environ.items()}</code></pre>
+</div>
+
+<p style="margin-top:1rem">When you actually need line reference (diffs, line-referenced reviews), use the numbered variant:</p>
+
+<div class="code-block">
+  <div class="code-block-header">
+    <span class="code-block-lang">python (numbered opt-in)</span>
+    <button class="cb-copy" onclick="copyCode(this)">copy</button>
+  </div>
+  <div class="code-block-body" style="padding:0">
+    <div class="cl"><span class="ln" aria-hidden="true">1</span><span class="lc">from pathlib import Path</span></div>
+    <div class="cl"><span class="ln" aria-hidden="true">2</span><span class="lc">from typing  import Optional</span></div>
+    <div class="cl"><span class="ln" aria-hidden="true">3</span><span class="lc"></span></div>
+    <div class="cl"><span class="ln" aria-hidden="true">4</span><span class="lc"># Load configuration from environment</span></div>
+    <div class="cl"><span class="ln" aria-hidden="true">5</span><span class="lc">def load_config(env_path: Path) -> Optional[dict]:</span></div>
+    <div class="cl"><span class="ln" aria-hidden="true">6</span><span class="lc">    if not env_path.exists():</span></div>
+    <div class="cl"><span class="ln" aria-hidden="true">7</span><span class="lc">        raise FileNotFoundError(f"No env at {env_path}")</span></div>
+    <div class="cl"><span class="ln" aria-hidden="true">8</span><span class="lc">    return {k: v for k, v in __import__('os').environ.items()}</span></div>
+  </div>
+</div>
+
+<p style="margin-top:1rem">Per-token syntax spans are legacy opt-in inside either variant:</p>
+
+<pre><code><span class="kw">from</span> pathlib <span class="kw">import</span> Path
+<span class="kw">def</span> <span class="fn">fn</span>(path: Path): <span class="cmt"># optional: wrapped spans</span>
+    <span class="kw">return</span> {<span class="str">'a'</span>: <span class="num">42</span>}</code></pre>
+
+<h4>Syntax token map</h4>
+<div class="legend">
+  <span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span> keywords · <code>--blue</code> (opt-in <code>.kw</code>)</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> functions · <code>--accent</code> (opt-in <code>.fn</code>)</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span> strings · <code>--green</code> (opt-in <code>.str</code>)</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--num)"></span> numbers · <code>--num</code> (opt-in <code>.num</code>)</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--fg3)"></span> comments · <code>--fg3</code> (opt-in <code>.cmt</code>)</span>
+</div>
+</section>
+
+<!-- ── DIFF BLOCKS ─────────────────────────────────────────────── -->
+<section id="diffs">
+<h2>Diff Blocks <span class="h2-badge new">signature</span></h2>
+<p>The primary component for codebase visualization. Dual line numbers (old | new) — the only justified instance of paired line numbers (acknowledged brittle — copy the structure carefully). Gutter with <code>+</code>/<code>-</code>/<code>&nbsp;</code>, hunk headers in <code>--blue</code>. Semantic backgrounds at 8% opacity on dark. <code>aria-hidden="true"</code> on <code>.dl-nums</code> and <code>.dl-gut</code>.</p>
+
+<div class="diff-block">
+  <div class="diff-header">
+    <span class="diff-filename">src/agent/config.py</span>
+    <div class="diff-stats"><span class="ds-a">+9</span><span class="ds-d">−3</span></div>
+  </div>
+  <div class="diff-hunk" aria-hidden="true">@@ -14,7 +14,13 @@ class AgentConfig:</div>
+  <div class="dl ctx"><div class="dl-nums" aria-hidden="true"><span class="dl-num">14</span><span class="dl-num">14</span></div><span class="dl-gut" aria-hidden="true"> </span><span class="dl-content">    model: str = "zai/glm-4.7"</span></div>
+  <div class="dl ctx"><div class="dl-nums" aria-hidden="true"><span class="dl-num">15</span><span class="dl-num">15</span></div><span class="dl-gut" aria-hidden="true"> </span><span class="dl-content">    max_tokens: int = 4096</span></div>
+  <div class="dl del"><div class="dl-nums" aria-hidden="true"><span class="dl-num">16</span><span class="dl-num"></span></div><span class="dl-gut" aria-hidden="true">−</span><span class="dl-content">    timeout: int = 30</span></div>
+  <div class="dl del"><div class="dl-nums" aria-hidden="true"><span class="dl-num">17</span><span class="dl-num"></span></div><span class="dl-gut" aria-hidden="true">−</span><span class="dl-content">    retry_on_failure: bool = False</span></div>
+  <div class="dl add"><div class="dl-nums" aria-hidden="true"><span class="dl-num"></span><span class="dl-num">16</span></div><span class="dl-gut" aria-hidden="true">+</span><span class="dl-content">    timeout: int = <span class="di-add">60</span></span></div>
+  <div class="dl add"><div class="dl-nums" aria-hidden="true"><span class="dl-num"></span><span class="dl-num">17</span></div><span class="dl-gut" aria-hidden="true">+</span><span class="dl-content">    retry_on_failure: bool = <span class="di-add">True</span></span></div>
+  <div class="dl add"><div class="dl-nums" aria-hidden="true"><span class="dl-num"></span><span class="dl-num">18</span></div><span class="dl-gut" aria-hidden="true">+</span><span class="dl-content">    retry_limit: int = 3</span></div>
+  <div class="dl add"><div class="dl-nums" aria-hidden="true"><span class="dl-num"></span><span class="dl-num">19</span></div><span class="dl-gut" aria-hidden="true">+</span><span class="dl-content">    backoff_factor: float = 1.5</span></div>
+  <div class="dl ctx"><div class="dl-nums" aria-hidden="true"><span class="dl-num">18</span><span class="dl-num">20</span></div><span class="dl-gut" aria-hidden="true"> </span><span class="dl-content">    temperature: float = 0.7</span></div>
+</div>
+
+<h4>File tree — change scope</h4>
+<div class="file-tree">
+  <div class="ft-row dir"><span>▸</span><span class="ft-n">src/agent/</span></div>
+  <div class="ft-row mod" style="padding-left:1.25rem"><span>📄</span><span class="ft-n">config.py</span><span class="ft-badge mod">modified</span></div>
+  <div class="ft-row add" style="padding-left:1.25rem"><span>📄</span><span class="ft-n">retry.py</span><span class="ft-badge add">new</span></div>
+  <div class="ft-row ctx" style="padding-left:1.25rem"><span>📄</span><span class="ft-n">loop.py</span></div>
+  <div class="ft-row del" style="padding-left:1.25rem"><span>📄</span><span class="ft-n">legacy_runner.py</span><span class="ft-badge del">deleted</span></div>
+</div>
+</section>
+
+<!-- ── ENTITY CARDS ────────────────────────────────────────────── -->
+<section id="cards">
+<h2>Entity Cards <span class="h2-badge ok">audit pattern</span></h2>
+<p>Container for a named thing being analyzed: a repository, service, or file group. Contains a title, path, optional callout, then child components. <code>.active</code> variant adds an accent left border for the current focus entity.</p>
+
+<div class="entity-card active">
+  <h3>📂 agent/ <span class="tag done">done</span></h3>
+  <div class="ec-path">~/prog/zeroclaw/src/agent/</div>
+  <div class="callout"><strong>Current migration target.</strong> Config changes deploy before the agent update. Verify checksums after rsync.</div>
+  <h4>Files</h4>
+  <ul class="file-list">
+    <li><span class="fl-icon">📄</span><code>config.py</code> <span class="tag deliverable">deliverable</span></li>
+    <li><span class="fl-icon">📄</span><code>retry.py</code> <span class="tag deliverable">deliverable</span></li>
+    <li><span class="fl-icon">📄</span><code>legacy_runner.py</code> <span class="tag remove">remove</span></li>
+  </ul>
+  <h4>Proposed Actions</h4>
+  <ul class="action-list">
+    <li class="create">Create <code>retry.py</code> with backoff logic extracted from <code>loop.py</code></li>
+    <li class="remove">Delete <code>legacy_runner.py</code> after confirming no call sites remain</li>
+    <li class="ask">Confirm: should <code>backoff_factor</code> be configurable per-tool or global?</li>
+  </ul>
+</div>
+</section>
+
+<!-- ── TAGS, BADGES, CALLOUTS ─────────────────────────────────── -->
+<section id="tags">
+<h2>Tags, Badges &amp; Callouts <span class="h2-badge info">3 distinct uses</span></h2>
+
+<h4>Inline tags — classification within file lists or prose</h4>
+<p style="margin-bottom:.5rem">Fixed vocabulary (must match exactly): <span class="tag deliverable">deliverable</span> <span class="tag temp">temp</span> <span class="tag debate">debate</span> <span class="tag remove">remove</span> <span class="tag done">done</span></p>
+
+<h4>Inline highlight — <code>.hl</code></h4>
+<p style="margin-bottom:.75rem">Use for the one phrase in a paragraph that carries the weight — a key term, the crux of an argument, a single load-bearing clause. The <span class="hl">migration requires a read-only window</span> is the constraint everything else depends on. Reserve it for phrases, not whole sentences.</p>
+
+<h4>Status badges — standalone row-level state (label == class)</h4>
+<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 1rem">
+  <span class="badge added">  <span class="bd"></span> added</span>
+  <span class="badge removed"><span class="bd"></span> removed</span>
+  <span class="badge modified"><span class="bd"></span> modified</span>
+  <span class="badge pending"><span class="bd"></span> pending</span>
+  <span class="badge draft">  <span class="bd"></span> draft</span>
+  <span class="badge breaking"><span class="bd"></span> breaking</span>
+</div>
+
+<h4>H2 pill badges — section-level status (label == class)</h4>
+<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 1rem">
+  <span style="font-size:.62rem;font-weight:500;padding:.15rem .5rem;border-radius:999px;font-family:var(--mono);letter-spacing:.05em;background:var(--green-bg);color:var(--green)">added</span>
+  <span style="font-size:.62rem;font-weight:500;padding:.15rem .5rem;border-radius:999px;font-family:var(--mono);letter-spacing:.05em;background:var(--yellow-bg);color:var(--yellow)">pending</span>
+  <span style="font-size:.62rem;font-weight:500;padding:.15rem .5rem;border-radius:999px;font-family:var(--mono);letter-spacing:.05em;background:var(--red-bg);color:var(--red)">removed</span>
+  <span style="font-size:.62rem;font-weight:500;padding:.15rem .5rem;border-radius:999px;font-family:var(--mono);letter-spacing:.05em;background:var(--blue-bg);color:var(--blue)">modified</span>
+  <span style="font-size:.62rem;font-weight:500;padding:.15rem .5rem;border-radius:999px;font-family:var(--mono);letter-spacing:.05em;background:var(--accent-bg);color:var(--accent)">draft</span>
+</div>
+
+<h4>Callout — contextual left-border annotation (one per section ceiling)</h4>
+<p>This section's intended callouts are shown individually (one per example group) to demonstrate each variant without violating the ceiling in this document. The callout showing all four variants has been removed — each row above/below demonstrates one variant at a time in real documents.</p>
+
+<div class="callout"><strong>Default (accent)</strong> Audit and proposed plan only — no changes have been made.</div>
+
+<p style="margin-top:1rem">Variant previews (shown here as examples but not counted as stacked — each would be in its own section in a real document):</p>
+
+<div style="border:1px dashed var(--border);border-radius:var(--radius);padding:.75rem 1rem;margin:.5rem 0">
+<p style="margin:0;font-size:.76rem;color:var(--fg3)">Info: Migration requires a read-only window of ~2 minutes during the schema transition. (would be <code>.callout.info</code> in its own section)</p>
+</div>
+<div style="border:1px dashed var(--border);border-radius:var(--radius);padding:.75rem 1rem;margin:.5rem 0">
+<p style="margin:0;font-size:.76rem;color:var(--fg3)">Warning: Oracle Cloud Always Free instances idle >7 days may be reclaimed. (would be <code>.callout.warn</code>)</p>
+</div>
+<div style="border:1px dashed var(--border);border-radius:var(--radius);padding:.75rem 1rem;margin:.5rem 0">
+<p style="margin:0;font-size:.76rem;color:var(--fg3)">Breaking change: AgentConfig.timeout default changed 30→60. Any caller relying on the old default will behave differently. (would be <code>.callout.danger</code>)</p>
+</div>
+
+<h4>Legend — precedes dot-color sections</h4>
+<div class="legend">
+  <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span> Deliverable</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--yellow)"></span> Move to <code>temp/</code></span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span> Needs decision</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span> Remove</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> Already done</span>
+</div>
+</section>
+
+<!-- ── DECISION DOCUMENTS ─────────────────────────────────────── -->
+<section id="decisions">
+<h2>Decision Documents <span class="h2-badge new">v1.3</span></h2>
+<p>Components for architectural decision records, design reviews, and option comparisons. Four pieces: numbered option headers, analysis grids, demo sandboxes, and recommendation blocks.</p>
+
+<h4>Option headers — numbered N-way comparisons</h4>
+<p style="margin-bottom:.75rem">Use <code>.option-num</code> (mono, accent, small) beside <code>.option-title</code> inside <code>.option-header</code>. Numbers are zero-padded: <code>01</code>, <code>02</code>, not <code>1</code>, <code>2</code>. The numbering signals these are ordered alternatives, not arbitrary sections.</p>
+
+<div class="option-header"><span class="option-num">01</span><span class="option-title">Collapsible sidebar (default)</span></div>
+<p style="margin-bottom:.75rem">Default for multi-section documents. 260px borderless left index with numbered sections; one click collapses to a 56px slim rail (numbers only) that keeps the active-section highlight. State persists in <code>localStorage</code>.</p>
+
+<div class="option-header"><span class="option-num">02</span><span class="option-title">Fixed sidebar (no collapse)</span></div>
+<p style="margin-bottom:.75rem">When the full rail must always be legible — long section labels, persistent status readouts. Same rail, no toggle, no <code>localStorage</code>.</p>
+
+<div class="option-header"><span class="option-num">03</span><span class="option-title">Single container (no rail/footer)</span></div>
+<p style="margin-bottom:1.25rem">Appropriate for short, single-topic documents: UI prototypes, pattern galleries, quick references. Skip the full rail+footer shell.</p>
+
+<h4>Analysis grid — pros / cons</h4>
+<p style="margin-bottom:.5rem">Two-column comparison. <code>+</code>/<code>−</code> mono glyphs as markers — they survive print and plain-text copy, unlike colored dots. Use for genuine trade-offs with real competing considerations. Don't manufacture analysis to fill the grid.</p>
+
+<div class="analysis">
+  <div class="analysis-col pros">
+    <h4>Pros</h4>
+    <ul>
+      <li>Both heading levels visible — no cycling blind</li>
+      <li>Fixed toolbar width — no layout shift on toggle</li>
+      <li>Trigger button doubles as state indicator</li>
+      <li>Pattern familiar from existing rich-text editors</li>
+    </ul>
+  </div>
+  <div class="analysis-col cons">
+    <h4>Cons</h4>
+    <ul>
+      <li>Two clicks required — open popup, then select</li>
+      <li>Popup can be dismissed on accidental outside click</li>
+      <li>More implementation complexity than a cycle button</li>
+    </ul>
+  </div>
+</div>
+
+<h4>Demo area — sandbox container</h4>
+<p style="margin-bottom:.5rem">Use for illustrated or live examples in spec and prototype documents. The <code>DEMO</code> label (absolutely positioned, top-left, mono uppercase) tells the reader this is an example, not output.</p>
+
+<div class="demo-area">
+  <span class="demo-label">Example · heading toolbar patterns</span>
+  <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-top:1rem">
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:.6rem .85rem;display:flex;gap:.5rem;align-items:center">
+      <span style="font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--fg2);padding:.2rem .5rem;border-radius:4px;cursor:default">B</span>
+      <span style="font-family:var(--mono);font-size:.85rem;font-style:italic;color:var(--fg2);padding:.2rem .5rem;border-radius:4px;cursor:default">I</span>
+      <span style="font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--fg);background:var(--border);padding:.2rem .5rem;border-radius:4px;cursor:default">H1</span>
+      <span style="font-family:var(--mono);font-size:.85rem;color:var(--fg2);padding:.2rem .5rem;border-radius:4px;cursor:default">H2</span>
+    </div>
+    <p style="margin:0;font-size:.82rem">← Pattern 01: split H1/H2 always visible</p>
+  </div>
+  <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-top:.75rem">
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:.6rem .85rem;display:flex;gap:.5rem;align-items:center">
+      <span style="font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--fg2);padding:.2rem .5rem;border-radius:4px;cursor:default">B</span>
+      <span style="font-family:var(--mono);font-size:.85rem;font-style:italic;color:var(--fg2);padding:.2rem .5rem;border-radius:4px;cursor:default">I</span>
+      <span style="font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--fg);background:var(--border);padding:.2rem .5rem;border-radius:4px;cursor:default">H</span>
+    </div>
+    <p style="margin:0;font-size:.82rem">← Pattern 02: single cycle button</p>
+  </div>
+</div>
+
+<h4>Recommendation — concluded judgment</h4>
+<p style="margin-bottom:.5rem">Full accent border (not left-only like a callout). Signals the analysis is complete and a decision has been reached. Use once, at the end of a comparison section. Don't use for warnings or annotations — that's what callouts are for.</p>
+
+<div class="recommendation">
+  <h3>Recommendation</h3>
+  <p><strong>Pattern 01 (Split H1/H2)</strong> is the strongest choice. Both heading levels are always visible, the toolbar width stays fixed, and there's no cycling blind.</p>
+  <p><strong>Pattern 02 (Cycle)</strong> is the runner-up if minimalism is the constraint — it matches the font-picker behavior and adds only a single DOM element.</p>
+</div>
+
+<h4>Keyboard shortcut — <code>kbd</code></h4>
+<p>Use <code>kbd</code> — <code>--bg4</code> fill, <code>--border</code> stroke, mono. <kbd>⌘</kbd> <kbd>K</kbd> opens command palette. <kbd>Shift</kbd> + <kbd>⌘</kbd> + <kbd>P</kbd> runs linter.</p>
+</section>
+
+<!-- ── TABLES ──────────────────────────────────────────────────── -->
+<section id="tables">
+<h2>Tables &amp; Structure <span class="h2-badge ok">structured data</span></h2>
+
+<h4>Comparison table</h4>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Service</th><th>vCPU</th><th>RAM</th><th>Cost/mo</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">aws ec2 t4g.micro</td><td class="mono">2</td><td class="mono">1 GB</td><td class="mono">~$8</td><td><span class="badge modified"><span class="bd"></span> modified</span></td></tr>
+    <tr><td class="mono">oracle always free (arm64)</td><td class="mono">4</td><td class="mono">24 GB</td><td class="mono">$0</td><td><span class="badge pending"><span class="bd"></span> pending</span></td></tr>
+    <tr><td class="mono">hetzner cx22</td><td class="mono">2</td><td class="mono">4 GB</td><td class="mono">~$4</td><td><span class="badge draft"><span class="bd"></span> draft</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4>Stat cards</h4>
+<div class="summary-grid">
+  <div class="stat-card"><div class="num">6</div><div class="label">Projects surveyed</div></div>
+  <div class="stat-card"><div class="num">~14</div><div class="label">Files to move to temp/</div></div>
+  <div class="stat-card"><div class="num">3</div><div class="label">Projects needing temp/ dir</div></div>
+  <div class="stat-card"><div class="num">4</div><div class="label">Open questions</div></div>
+</div>
+
+<h4>Plan / steps — ordered execution</h4>
+<div class="plan">
+  <div class="plan-step done-step"><div class="plan-ind"><div class="plan-dot done">✓</div><div class="plan-line"></div></div><div class="plan-body"><div class="plan-title">Snapshot EC2 instance</div><div class="plan-desc">Create AMI from running t4g.micro. Store snapshot ID in runbook.</div></div></div>
+  <div class="plan-step"><div class="plan-ind"><div class="plan-dot active">▶</div><div class="plan-line"></div></div><div class="plan-body"><div class="plan-title">Provision Oracle Cloud instance</div><div class="plan-desc">Create 4 OCPU / 24 GB ARM64 Always Free compute. Configure SSH and firewall rules.</div></div></div>
+  <div class="plan-step"><div class="plan-ind"><div class="plan-dot">3</div><div class="plan-line"></div></div><div class="plan-body"><div class="plan-title">Migrate agent data</div><div class="plan-desc">rsync state and configuration. Verify checksums.</div></div></div>
+  <div class="plan-step"><div class="plan-ind"><div class="plan-dot">4</div></div><div class="plan-body"><div class="plan-title">Update Telegram webhook and DNS</div><div class="plan-desc">Point webhook to new IP. Monitor 24h before decommissioning EC2.</div></div></div>
+</div>
+
+<h4>SVG diagrams — arrows now use --svg-stroke token</h4>
+<div class="diagram-wrap">
+<svg class="diagram-svg" viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg" style="min-width:520px">
+<defs>
+  <marker id="arr"  markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="var(--svg-stroke)"/></marker>
+  <marker id="arra" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="var(--accent)"/></marker>
+  <style>.nt{font-family:'JetBrains Mono',monospace;font-size:11px;fill:var(--fg)}.ns{font-family:'JetBrains Mono',monospace;font-size:9px;fill:var(--fg3)}.el{font-family:'JetBrains Mono',monospace;font-size:9px;fill:var(--fg3)}</style>
+</defs>
+<rect x="10"  y="55" width="100" height="44" rx="6" fill="var(--bg3)" stroke="var(--border)"/>
+<text x="60"  y="75" text-anchor="middle" class="nt">Telegram</text>
+<text x="60"  y="89" text-anchor="middle" class="ns">webhook</text>
+<line x1="110" y1="77" x2="165" y2="77" stroke="var(--svg-stroke)" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="137" y="71" text-anchor="middle" class="el">msg</text>
+<rect x="167" y="44" width="130" height="66" rx="6" fill="var(--bg3)" stroke="var(--accent)" stroke-width="1.5"/>
+<text x="232" y="70" text-anchor="middle" class="nt">Mirakai</text>
+<text x="232" y="84" text-anchor="middle" class="ns">ZeroClaw</text>
+<text x="232" y="97" text-anchor="middle" class="ns">zai/glm-4.7</text>
+<line x1="297" y1="65" x2="355" y2="45" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arra)"/>
+<text x="333" y="49" class="el" style="fill:var(--accent)">primary</text>
+<line x1="297" y1="90" x2="355" y2="115" stroke="var(--svg-stroke)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="335" y="113" class="el">fallback</text>
+<rect x="357" y="22"  width="110" height="38" rx="6" fill="var(--bg3)" stroke="var(--border)"/>
+<text x="412" y="42" text-anchor="middle" class="nt">glm-4.7</text>
+<text x="412" y="54" text-anchor="middle" class="ns">zhipu direct</text>
+<rect x="357" y="103" width="110" height="38" rx="6" fill="var(--bg3)" stroke="var(--border)"/>
+<text x="412" y="124" text-anchor="middle" class="nt">OpenRouter</text>
+<text x="412" y="136" text-anchor="middle" class="ns">secondary</text>
+<rect x="480" y="55"  width="70"  height="44" rx="6" fill="var(--bg3)" stroke="var(--border)" stroke-dasharray="3 2"/>
+<text x="515" y="75" text-anchor="middle" class="nt">tools</text>
+<text x="515" y="89" text-anchor="middle" class="ns">bash/fs</text>
+<line x1="467" y1="77" x2="480" y2="77" stroke="var(--svg-stroke)" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M167,100 Q110,140 60,130 L60,99" stroke="var(--svg-stroke)" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+<text x="105" y="148" text-anchor="middle" class="el">reply</text>
+</svg>
+</div>
+</section>
+
+<!-- ── WRITING RULES ───────────────────────────────────────────── -->
+<section id="rules">
+<h2>Writing Rules <span class="h2-badge info">23 rules</span></h2>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">justify every element</td><td>If removing it changes nothing for the reader, remove it.</td></tr>
+    <tr><td class="mono">section titles are nouns</td><td>"Migration Plan" not "Migrating the Database". Action goes in the prose below the title.</td></tr>
+    <tr><td class="mono">rail title format</td><td><code>scope / document-type</code>. E.g. <code>zeroclaw / spec</code>, <code>spring-clean / audit</code>.</td></tr>
+    <tr><td class="mono">one export, footer only</td><td>Exactly one document-level export: <strong>copy markdown</strong>, in the footer. Rail meta is version/date only. Never put export buttons in the rail.</td></tr>
+    <tr><td class="mono">no invented export flavors</td><td>Do not add print / PDF, copy link, copy prompt, copy diff, or copy JSON. Code-block <code>copy</code> is component-local and allowed.</td></tr>
+    <tr><td class="mono">markdown export is prose-first</td><td>Footer copy uses a recursive DOM→markdown walk that descends <code>&lt;section&gt;</code> wrappers. It is not lossless source. Prefer readable prose export over multi-format chrome. Fixed in v2.0: previously <code>main.children</code> missed headings inside sections.</td></tr>
+    <tr><td class="mono">no hero language in tools</td><td>Developer document, not a landing page. No taglines, no marketing copy.</td></tr>
+    <tr><td class="mono">callouts are exceptional</td><td>If every section has a callout, none are exceptional. One per section is the ceiling. Callouts are for one annotation only.</td></tr>
+    <tr><td class="mono">callouts annotate; recommendations conclude</td><td>A callout is a warning or aside. A recommendation block signals the analysis is done and a judgment has been reached. Don't conflate them.</td></tr>
+    <tr><td class="mono">badges communicate change</td><td>A badge is a state that could change. If it's static forever, it's a label — use <code>.tag</code>. Badge label must equal the class name.</td></tr>
+    <tr><td class="mono">tags have fixed vocab</td><td>Fixed — <code>deliverable</code>, <code>temp</code>, <code>debate</code>, <code>remove</code>, <code>done</code>. Label must match the class. No variants (no "new", no "✓ clean").</td></tr>
+    <tr><td class="mono">errors are instructions</td><td>Error states say what happened and how to fix it. Never "something went wrong."</td></tr>
+    <tr><td class="mono">no lorem ipsum</td><td>All placeholder content must be plausible and domain-appropriate.</td></tr>
+    <tr><td class="mono">option numbers are zero-padded</td><td>Write <code>01</code>, <code>02</code>, <code>03</code> — not <code>1</code>, <code>2</code>, <code>3</code>.</td></tr>
+    <tr><td class="mono">analysis grids need real trade-offs</td><td>Don't manufacture pros/cons to fill the grid. If the decision is obvious, state it as a recommendation without the grid.</td></tr>
+    <tr><td class="mono">focus every interactive element</td><td>All <code>a</code> and <code>button</code> must have visible <code>:focus-visible</code> states using <code>var(--focus)</code>.</td></tr>
+    <tr><td class="mono">aria-hide visual-only elements</td><td>Code and diff line numbers, gutter sigils (<code>.ln</code>, <code>.dl-nums</code>, <code>.dl-gut</code>) get <code>aria-hidden="true"</code>.</td></tr>
+    <tr><td class="mono">print uses a dedicated theme (skeleton handles it)</td><td>A <code>@media print</code> block lives once in the skeleton and handles white rendering. Never rely on the dark theme for print. Tints are 12–16% on white — 8% is near-invisible. Base 8% on dark is intentional; background compensates. See SKILL.md §Print.</td></tr>
+    <tr><td class="mono">respect reduced motion</td><td>Wrap all transitions in <code>@media (prefers-reduced-motion: reduce)</code> with <code>transition: none</code>.</td></tr>
+    <tr><td class="mono">clipboard needs fallback + feedback</td><td>Try <code>navigator.clipboard.writeText</code>, fall back to <code>execCommand('copy')</code>. Flash "copy failed" on failure.</td></tr>
+    <tr><td class="mono">diagrams scroll, never downscale</td><td>Use <code>.diagram-svg</code> with <code>min-width: 520px</code>. Narrow screens scroll horizontally.</td></tr>
+    <tr><td class="mono">highlight sparingly</td><td>Use <code>.hl</code> for at most one load-bearing phrase per paragraph. Never whole sentences.</td></tr>
+    <tr><td class="mono">code is plain by default (v2.0)</td><td>Default illustrative code is <code>&lt;pre&gt;&lt;code&gt;</code> in <code>--fg</code>. No required <code>.kw/.fn/.str/.cmt/.num/.op</code> spans. Per-token spans are opt-in for demos or hand-highlighted examples. Line numbers opt-in for diffs and line-referenced reviews.</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+</main>
+
+<footer>
+  <span id="foot-version" data-version>html-presentation / style-guide · v2.1 · 2026-07-17</span>
+  <div class="footer-actions">
+    <button class="nav-export-btn primary" aria-label="Copy style guide as markdown" onclick="copyMarkdown(this)">copy markdown</button>
+  </div>
+</footer>
+</div><!-- /content -->
+</div><!-- /shell -->
+
+<script>
+// ── Rail collapse (v2.1) — state persists in localStorage ──────
+const shell      = document.querySelector('.shell');
+const railToggle = document.getElementById('railToggle');
+function setRail(collapsed, persist = true) {
+  shell.classList.toggle('rail-collapsed', collapsed);
+  railToggle.setAttribute('aria-expanded', String(!collapsed));
+  railToggle.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+  if (persist) { try { localStorage.setItem('hp-rail', collapsed ? '1' : '0'); } catch (e) {} }
+}
+try { setRail(localStorage.getItem('hp-rail') === '1', false); } catch (e) {}
+railToggle.addEventListener('click', () => setRail(!shell.classList.contains('rail-collapsed')));
+
+// ── Nav active state (IntersectionObserver) ───────────────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks  = document.querySelectorAll('.rail nav a.nav-link');
+const _io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    navLinks.forEach(l => { l.classList.remove('active'); l.removeAttribute('aria-current'); });
+    const a = document.querySelector(`.rail nav a[href="#${e.target.id}"]`);
+    if (a) { a.classList.add('active'); a.setAttribute('aria-current', 'true'); }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => _io.observe(s));
+
+// ── Clipboard ──────────────────────────────────────────────────
+function flash(btn, label = 'copied') {
+  const orig = btn.dataset.label || btn.textContent;
+  clearTimeout(btn._t);
+  btn.textContent = label;
+  btn._t = setTimeout(() => { btn.textContent = orig; }, 1500);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch {
+    const ta = Object.assign(document.createElement('textarea'), {
+      value: text, readOnly: true, style: 'position:fixed;top:-9999px'
+    });
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  }
+}
+
+// ── copyMarkdown — recursive DOM→markdown export.
+// Single source of truth for export logic: keep this block byte-identical
+// between skeleton.html and html-presentation-style-guide.html.
+// Descends <section> wrappers, so it works on any skeleton-derived page.
+
+const RECURSE = {};
+const EXPORT_SKIP_RE = /\b(h2-badge|badge|bd|tag|ln|dl-num|dl-nums|dl-gut|legend-dot|demo-label|fl-icon)\b/;
+
+function isExportSkip(el) {
+  return !!(el.hasAttribute && el.hasAttribute('data-export-skip'));
+}
+
+function inlineMarkdown(node, keepBadges) {
+  if (node.nodeType === 1) {
+    const tag = node.tagName.toUpperCase();
+    const cls = typeof node.className === 'string' ? node.className : '';
+    if (tag === 'CODE' || tag === 'KBD') {
+      const t = node.textContent.replace(/\s+/g, ' ');
+      const trimmed = t.trim();
+      if (!trimmed) return t ? '` `' : '';
+      return trimmed.includes('`') ? '``' + trimmed + '``' : '`' + trimmed + '`';
+    }
+    if (tag === 'STRONG' || tag === 'B' || /\bhl\b/.test(cls)) {
+      return '**' + innerInline(node, keepBadges).replace(/\s+/g, ' ').trim() + '**';
+    }
+    if (tag === 'EM' || tag === 'I') {
+      return '*' + innerInline(node, keepBadges).replace(/\s+/g, ' ').trim() + '*';
+    }
+    if (tag === 'A') {
+      const href = node.getAttribute('href');
+      const t = innerInline(node, keepBadges).replace(/\s+/g, ' ').trim();
+      return href ? '[' + t + '](' + href + ')' : t;
+    }
+  }
+  return innerInline(node, keepBadges);
+}
+
+function innerInline(node, keepBadges) {
+  if (node.nodeType === 3) return node.textContent;
+  if (node.nodeType !== 1) return '';
+  let out = '';
+  const walk = (n) => {
+    for (const child of n.childNodes) {
+      if (child.nodeType === 3) { out += child.textContent; continue; }
+      if (child.nodeType !== 1) continue;
+      const tag = child.tagName.toUpperCase();
+      const cls = typeof child.className === 'string' ? child.className : '';
+      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'BUTTON' || tag === 'SVG') continue;
+      if (isExportSkip(child)) continue;
+      if (EXPORT_SKIP_RE.test(cls) && !(keepBadges && /\bbadge\b/.test(cls))) continue;
+      if (tag === 'BR') { out += '\n'; continue; }
+      out += inlineMarkdown(child, keepBadges);
+    }
+  };
+  walk(node);
+  return out;
+}
+
+function headingMarkdown(el, level) {
+  let s = '';
+  for (const n of el.childNodes) {
+    if (n.nodeType === 3) s += n.textContent;
+    else if (n.nodeType === 1) {
+      const cls = typeof n.className === 'string' ? n.className : '';
+      if (EXPORT_SKIP_RE.test(cls) || isExportSkip(n)) continue;
+      s += inlineMarkdown(n);
+    }
+  }
+  s = s.replace(/\s+/g, ' ').trim();
+  // Strip leading section numbers: "01 Overview" → "Overview", "1. Intro" → "Intro"
+  s = s.replace(/^\d{1,3}(?:\.\s+|\s+[–—\-]\s+|\s+)/, '').trim();
+  return s ? '#'.repeat(level) + ' ' + s : '';
+}
+
+function paragraphMarkdown(el) {
+  return inlineMarkdown(el).replace(/\s+/g, ' ').trim();
+}
+
+function listMarkdown(el, ordered) {
+  const items = [...el.children].filter((c) => c.tagName === 'LI');
+  if (!items.length) return '';
+  return items.map((li, i) => {
+    const marker = ordered ? i + 1 + '. ' : '- ';
+    let direct = '';
+    const nested = [];
+    for (const n of li.childNodes) {
+      if (n.nodeType === 3) { direct += n.textContent; continue; }
+      if (n.nodeType !== 1) continue;
+      if (n.tagName === 'UL' || n.tagName === 'OL') { nested.push(n); continue; }
+      if (n.tagName === 'P' || n.tagName === 'DIV') { direct += inlineMarkdown(n); continue; }
+      const cls = typeof n.className === 'string' ? n.className : '';
+      if (EXPORT_SKIP_RE.test(cls) || isExportSkip(n)) continue;
+      direct += inlineMarkdown(n);
+    }
+    let line = marker + direct.replace(/\s+/g, ' ').trim();
+    if (nested.length) {
+      const sub = nested.map((nl) => listMarkdown(nl, nl.tagName === 'OL')).filter(Boolean);
+      if (sub.length) line += '\n' + sub.join('\n').split('\n').map((l) => '  ' + l).join('\n');
+    }
+    return line;
+  }).join('\n');
+}
+
+function tableMarkdown(el) {
+  const rows = [...el.querySelectorAll('tr')];
+  if (!rows.length) return '';
+  const grid = rows.map((tr) =>
+    [...tr.querySelectorAll('th,td')].map((td) =>
+      inlineMarkdown(td, true).replace(/\s+/g, ' ').trim().replace(/\|/g, '\\|')
+    )
+  );
+  const ncols = Math.max(1, ...grid.map((r) => r.length));
+  const pad = (r) => { const c = r.slice(); while (c.length < ncols) c.push(''); return c; };
+  const fmt = (r) => '| ' + pad(r).join(' | ') + ' |';
+  const sep = '| ' + Array(ncols).fill('---').join(' | ') + ' |';
+  return [fmt(grid[0]), sep, ...grid.slice(1).map(fmt)].join('\n');
+}
+
+function normalizeLang(s) {
+  return (s || '').toLowerCase().replace(/\(.*?\)/g, ' ').replace(/[^a-z0-9+#\-_]/g, ' ').trim().split(/\s+/)[0] || '';
+}
+
+function cleanCode(text) {
+  return (text || '').replace(/\r\n/g, '\n').replace(/\s+$/, '');
+}
+
+function codeFence(lang, text) {
+  return '```' + lang + '\n' + text + '\n```';
+}
+
+function numberedCodeRows(el) {
+  const rows = el.querySelectorAll('.cl');
+  if (!rows.length) return null;
+  return [...rows].map((r) => {
+    const lc = r.querySelector('.lc');
+    return lc ? lc.textContent : r.textContent;
+  }).join('\n');
+}
+
+function preMarkdown(el) {
+  let lang = '';
+  const cb = el.closest ? el.closest('.code-block') : null;
+  if (cb) {
+    const le = cb.querySelector('.code-block-lang');
+    if (le) lang = normalizeLang(le.textContent);
+  }
+  const numbered = numberedCodeRows(el);
+  const content = numbered !== null ? numbered : (el.querySelector('code') || el).textContent;
+  return codeFence(lang, cleanCode(content));
+}
+
+function codeBlockMarkdown(el) {
+  const le = el.querySelector('.code-block-lang');
+  const lang = le ? normalizeLang(le.textContent) : '';
+  const numbered = numberedCodeRows(el);
+  const content = numbered !== null ? numbered : (el.querySelector('code') || el.querySelector('.code-block-body') || el).textContent;
+  return codeFence(lang, cleanCode(content));
+}
+
+function diffMarkdown(el) {
+  const lines = [];
+  const hunk = el.querySelector('.diff-hunk');
+  if (hunk) lines.push(hunk.textContent.trim());
+  el.querySelectorAll('.dl').forEach((row) => {
+    const gut = row.querySelector('.dl-gut');
+    const content = row.querySelector('.dl-content');
+    const sig = gut ? gut.textContent.trim() || ' ' : ' ';
+    lines.push(sig + (content ? content.textContent : ''));
+  });
+  return codeFence('diff', cleanCode(lines.join('\n')));
+}
+
+function calloutMarkdown(el) {
+  const lines = [];
+  let cur = '';
+  let curIsLabel = false;
+  const glue = (a, b) => {
+    if (!a) return b;
+    if (!b) return a;
+    return /^[.,:;!?]/.test(b) ? a + b : a + ' ' + b;
+  };
+  const flush = () => { if (cur) lines.push(cur); cur = ''; curIsLabel = false; };
+  for (const n of el.childNodes) {
+    if (n.nodeType === 3) {
+      const t = n.textContent.replace(/\s+/g, ' ').trim();
+      if (t) { cur = glue(cur, t); curIsLabel = false; }
+      continue;
+    }
+    if (n.nodeType !== 1) continue;
+    const tag = n.tagName.toUpperCase();
+    const cls = typeof n.className === 'string' ? n.className : '';
+    if (tag === 'SVG' || tag === 'SCRIPT' || tag === 'STYLE') continue;
+    if (EXPORT_SKIP_RE.test(cls) || isExportSkip(n)) continue;
+    if (tag === 'STRONG' || tag === 'B') {
+      const s = inlineMarkdown(n).replace(/\s+/g, ' ').trim();
+      if (cur && !curIsLabel) {
+        cur = glue(cur, s);
+      } else {
+        if (cur) flush();
+        cur = s;
+        curIsLabel = true;
+      }
+    } else {
+      const t = inlineMarkdown(n).replace(/\s+/g, ' ').trim();
+      if (t) { cur = glue(cur, t); curIsLabel = false; }
+    }
+  }
+  flush();
+  return lines.map((l) => l.split('\n').map((p) => '> ' + p).join('\n')).join('\n');
+}
+
+function fileTreeMarkdown(el) {
+  const rows = [...el.querySelectorAll('.ft-row')];
+  if (!rows.length) return '';
+  return rows.map((row) => {
+    const first = row.children[0];
+    const nameEl = row.querySelector('.ft-n');
+    const badgeEl = row.querySelector('.ft-badge');
+    const icon = first && !first.classList.contains('ft-n') && !first.classList.contains('ft-badge') ? first.textContent.trim() : '';
+    const name = nameEl ? nameEl.textContent.trim() : row.textContent.replace(/\s+/g, ' ').trim();
+    const badge = badgeEl ? badgeEl.textContent.trim() : '';
+    const indent = row.style.paddingLeft ? '  ' : '';
+    return indent + '- ' + (icon ? icon + ' ' : '') + name + (badge ? ' (' + badge + ')' : '');
+  }).join('\n');
+}
+
+function typeRowMarkdown(el) {
+  const labelEl = el.querySelector('.type-label');
+  const specEl = el.querySelector('.type-spec');
+  const metaEl = el.querySelector('.type-meta');
+  let example = '';
+  for (const n of el.childNodes) {
+    if (n.nodeType === 3) { example += n.textContent; continue; }
+    if (n.nodeType !== 1) continue;
+    if (n === metaEl) continue;
+    example += inlineMarkdown(n);
+  }
+  const label = labelEl ? labelEl.textContent.trim() : '';
+  const spec = specEl ? specEl.textContent.trim() : '';
+  example = example.replace(/\s+/g, ' ').trim();
+  let line = '- ';
+  if (label) line += '**' + label + '**';
+  if (spec) line += ' (' + spec + ')';
+  if (example) line += (label || spec ? ': ' : '') + example;
+  return line;
+}
+
+function spaceRowMarkdown(el) {
+  const meta = el.querySelector('.space-meta');
+  const use = el.querySelector('.space-use');
+  const m = meta ? meta.textContent.replace(/\s+/g, ' ').trim() : '';
+  const u = use ? use.textContent.replace(/\s+/g, ' ').trim() : '';
+  return '- **' + m + '** — ' + u;
+}
+
+function swatchMarkdown(el) {
+  const name = el.querySelector('.swatch-name');
+  const val = el.querySelector('.swatch-val');
+  const n = name ? name.textContent.trim() : '';
+  const v = val ? val.textContent.trim() : '';
+  return '- **' + n + '** ' + v;
+}
+
+function statCardMarkdown(el) {
+  const num = el.querySelector('.num');
+  const label = el.querySelector('.label');
+  const n = num ? num.textContent.replace(/\s+/g, ' ').trim() : '';
+  const l = label ? label.textContent.replace(/\s+/g, ' ').trim() : '';
+  return '- **' + n + '** ' + l;
+}
+
+function legendMarkdown(el) {
+  return [...el.querySelectorAll('.legend-item')]
+    .map((it) => '- ' + inlineMarkdown(it).replace(/\s+/g, ' ').trim())
+    .join('\n');
+}
+
+function planMarkdown(el) {
+  return [...el.querySelectorAll('.plan-step')]
+    .map((st, i) => {
+      const titleEl = st.querySelector('.plan-title');
+      const descEl = st.querySelector('.plan-desc');
+      const t = titleEl ? titleEl.textContent.replace(/\s+/g, ' ').trim() : '';
+      const d = descEl ? inlineMarkdown(descEl).replace(/\s+/g, ' ').trim() : '';
+      let line = i + 1 + '. ' + (t ? '**' + t + '**' : '');
+      if (d) line += (t ? ' — ' : '') + d;
+      return line;
+    })
+    .join('\n');
+}
+
+function optionHeaderMarkdown(el) {
+  const num = el.querySelector('.option-num');
+  const title = el.querySelector('.option-title');
+  const n = num ? num.textContent.replace(/\s+/g, ' ').trim() : '';
+  const t = title ? inlineMarkdown(title).replace(/\s+/g, ' ').trim() : '';
+  return '#### ' + (n ? n + ' — ' : '') + t;
+}
+
+function demoAreaMarkdown(el) {
+  const lines = [...el.querySelectorAll('p')]
+    .map((p) => paragraphMarkdown(p))
+    .filter(Boolean);
+  return lines.length ? lines.join('\n\n') : '';
+}
+
+function handleBlock(el) {
+  const tag = el.tagName.toUpperCase();
+  const cls = typeof el.className === 'string' ? el.className : '';
+  if (tag === 'NAV' || tag === 'FOOTER' || tag === 'SCRIPT' || tag === 'STYLE' || tag === 'SVG' || tag === 'BUTTON') return null;
+  if (isExportSkip(el)) return null;
+  if (EXPORT_SKIP_RE.test(cls)) return null;
+  if (tag === 'H1') return { kind: 'block', text: headingMarkdown(el, 1) };
+  if (tag === 'H2') return { kind: 'block', text: headingMarkdown(el, 2) };
+  if (tag === 'H3') return { kind: 'block', text: headingMarkdown(el, 3) };
+  if (tag === 'H4') return { kind: 'block', text: headingMarkdown(el, 4) };
+  if (tag === 'H5') return { kind: 'block', text: headingMarkdown(el, 5) };
+  if (tag === 'H6') return { kind: 'block', text: headingMarkdown(el, 6) };
+  if (tag === 'P') { const t = paragraphMarkdown(el); return t ? { kind: 'block', text: t } : null; }
+  if (tag === 'BLOCKQUOTE') { const t = calloutMarkdown(el); return t ? { kind: 'block', text: t } : null; }
+  if (tag === 'PRE') return { kind: 'block', text: preMarkdown(el) };
+  if (tag === 'TABLE') { const t = tableMarkdown(el); return t ? { kind: 'block', text: t } : null; }
+  if (tag === 'UL') { const t = listMarkdown(el, false); return t ? { kind: 'block', text: t } : null; }
+  if (tag === 'OL') { const t = listMarkdown(el, true); return t ? { kind: 'block', text: t } : null; }
+  if (tag === 'DIV') {
+    if (/\bcode-block\b/.test(cls)) return { kind: 'block', text: codeBlockMarkdown(el) };
+    if (/\bdiff-block\b/.test(cls)) return { kind: 'block', text: diffMarkdown(el) };
+    if (/\bfile-tree\b/.test(cls)) return { kind: 'block', text: fileTreeMarkdown(el) };
+    if (/\bcallout\b/.test(cls)) { const t = calloutMarkdown(el); return t ? { kind: 'block', text: t } : null; }
+    if (/\blegend\b/.test(cls)) { const t = legendMarkdown(el); return t ? { kind: 'block', text: t } : null; }
+    if (/\bdemo-area\b/.test(cls)) { const t = demoAreaMarkdown(el); return t ? { kind: 'block', text: t } : null; }
+    if (/\bplan\b/.test(cls)) { const t = planMarkdown(el); return t ? { kind: 'block', text: t } : null; }
+    if (/\boption-header\b/.test(cls)) { const t = optionHeaderMarkdown(el); return t ? { kind: 'block', text: t } : null; }
+    if (/\bswatch-grid\b/.test(cls)) return RECURSE;
+    if (/\btype-row\b/.test(cls)) return { kind: 'item', text: typeRowMarkdown(el) };
+    if (/\bspace-row\b/.test(cls)) return { kind: 'item', text: spaceRowMarkdown(el) };
+    if (/\bswatch\b/.test(cls)) return { kind: 'item', text: swatchMarkdown(el) };
+    if (/\bstat-card\b/.test(cls)) return { kind: 'item', text: statCardMarkdown(el) };
+    const hasEl = [...el.children].some((c) => c.tagName !== 'BR');
+    if (hasEl) return RECURSE;
+    const t = paragraphMarkdown(el);
+    return t ? { kind: 'block', text: t } : null;
+  }
+  // Raw inline elements at block level (bare spans, styled demo pills, etc.)
+  // are decorative chrome in this design system — skip them.
+  return null;
+}
+
+function exportMarkdown(root) {
+  const blocks = [];
+  let listGroup = [];
+  const flushList = () => {
+    if (listGroup.length) { blocks.push(listGroup.join('\n').trim()); listGroup = []; }
+  };
+  const push = (b) => { if (b && b.trim()) blocks.push(b.trim()); };
+  const walk = (parent) => {
+    for (const el of parent.children) {
+      if (el.tagName === 'SECTION') { flushList(); walk(el); continue; }
+      const seg = handleBlock(el);
+      if (seg === RECURSE) { flushList(); walk(el); continue; }
+      if (!seg || !seg.text || !seg.text.trim()) continue;
+      if (seg.kind === 'item') listGroup.push(seg.text);
+      else { flushList(); push(seg.text); }
+    }
+    flushList();
+  };
+  walk(root);
+  const md = blocks.join('\n\n').trim();
+  return md ? md + '\n' : '';
+}
+
+async function copyMarkdown(btn) {
+  const main = document.querySelector('main') || document.body;
+  const md = exportMarkdown(main);
+  const ok = await copyText(md);
+  flash(btn, ok ? 'copied' : 'copy failed');
+}
+
+async function copyCode(btn) {
+  const body = btn.closest('.code-block');
+  if (!body) return;
+  const lc = body.querySelectorAll('.lc');
+  let txt;
+  if (lc.length) txt = [...lc].map(el => el.textContent).join('\n');
+  else {
+    const codeEl = body.querySelector('code') || body.querySelector('pre') || body.querySelector('.code-block-body');
+    txt = codeEl.textContent || '';
+  }
+  const ok = await copyText(txt.trim());
+  flash(btn, ok ? 'copied' : 'copy failed');
+}
+</script>
+</body>
+</html>

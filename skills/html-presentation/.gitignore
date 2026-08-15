@@ -1,0 +1,4 @@
+# ── Workspace ──────────────────────────────────────────────────────
+# temp/ holds exploratory prototypes that are NOT deliverables.
+# Working copy iteration lives here; harnesses reach it via symlinks.
+temp/
