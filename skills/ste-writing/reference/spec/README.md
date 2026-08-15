@@ -1,12 +1,8 @@
 # ASD-STE100 — full standard (Issue 9, January 2025)
 
-The complete ASD-STE100 Simplified Technical English standard, split from the
-single converted source (`temp/raw-ASD-STE100-ISSUE-9.md`) into navigable parts.
-© ASD, 2025 — All rights reserved. Do not redistribute.
+This directory holds the complete ASD-STE100 Simplified Technical English standard. The source came from one converted file (`temp/raw-ASD-STE100-ISSUE-9.md`) split into navigable parts. © ASD, 2025 — All rights reserved. Do not redistribute.
 
-The standard has two parts: **Part 1 – Writing Rules** (the rules an author
-follows) and **Part 2 – Dictionary** (the ~875 approved words plus ~1274
-non-approved words with approved alternatives).
+The standard has two parts: **Part 1 – Writing Rules** and **Part 2 – Dictionary**. Part 1 lists the rules an author follows. Part 2 holds the ~875 approved words plus ~1274 non-approved words with approved alternatives.
 
 ## Files
 
@@ -23,8 +19,14 @@ non-approved words with approved alternatives).
 | 1 | Words (approved words, technical nouns/verbs, part of speech) |
 | 2 | Multi-word nouns |
 | 3 | Verbs |
+
+| Section | Topic |
+|---|---|
 | 4 | Sentences (length, one topic per sentence) |
 | 5 | Procedural writing (imperative, steps, conditions) |
+
+| Section | Topic |
+|---|---|
 | 6 | Descriptive writing |
 | 7 | Safety instructions |
 | 8 | Punctuation and word count |
@@ -32,6 +34,4 @@ non-approved words with approved alternatives).
 
 ## Note
 
-The source file was a flat PDF conversion with repeating page-header footers
-(e.g. "Part 2 - Dictionary" appears on every dictionary page). The splits above
-follow the real document boundaries, not the page headers.
+The source file came from a flat PDF conversion with repeating page-header footers (e.g. "Part 2 - Dictionary" appears on every dictionary page). The splits above follow the real document boundaries, not the page headers.
