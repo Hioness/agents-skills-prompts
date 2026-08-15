@@ -11,6 +11,12 @@ chat-bg-prompts/
 # are not distributed with this repo. The README is the public face.
 AGENTS.md
 
+# ── Non-redistributable reference ──────────────────────────────────
+# The ASD-STE100 standard (© ASD, all rights reserved) is reference
+# material for the ste-writing skill. It stays local and is not
+# uploaded. The linter and skill work without it.
+skills/ste-writing/reference/
+
 # ── Dependencies ───────────────────────────────────────────────────
 node_modules/
 
