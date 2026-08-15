@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "minimal",
+  "instructions": [
+    "~/.config/opencode/working-dir.md",
+    "~/.config/opencode/skills/ste-writing/ste-always-on.md"
+  ],
+  "agent": {
+    "build": {
+      "disable": true
+    },
+    "plan": {
+      "disable": true
+    }
+  }
+}

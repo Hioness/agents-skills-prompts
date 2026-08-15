@@ -48,8 +48,13 @@ Keep it short. The agent that launched you is reading, not parsing.
 
 ## Working directory
 
-Do not access directories outside the current repo. Temporary outputs go
-in `temp/` at the repo root.
+Stay inside the working directory you were given. Do not read, write,
+list, or run commands against paths outside it — no parent dirs, home
+config, sibling repos, or absolute paths elsewhere. If the goal needs
+something outside that directory, stop and report BLOCKED.
+
+Temporary outputs go in `temp/` under the working directory (create it
+if needed). Do not invent another scratch location.
 
 ## Safety
 
