@@ -38,6 +38,7 @@ Skills live in `skills/<name>/`. Each skill is a directory with a `SKILL.md` fil
 | Skill | Purpose |
 |---|---|
 | html-presentation | One dark-mode HTML file for specs, plans, code reviews, and prototypes |
+| ironvale | Industrial design system: chamfered rectangles, cream-on-dark, Space Mono + Barlow Condensed |
 | lakebed | Agent-native CLI and runtime for small full-stack TypeScript apps called capsules |
 | monospace-text | Dark academic reading pages with JetBrains Mono, sidebar TOC, and callout boxes |
 | serif-codex | Converts academic Markdown into a dark-mode HTML reading page with a warm library aesthetic |
@@ -53,6 +54,7 @@ Skills live in `skills/<name>/`. Each skill is a directory with a `SKILL.md` fil
 |---|---|
 | subagent-loops | Launches and parallelizes loop subagents for autonomous iteration work. OpenCode-specific |
 | sumi-ink-wash | Japanese sumi ink wash design system with washi paper and vermilion accents |
+| terminal-brutalist | Dark monochrome design system: zero border-radius, 1px hard borders, offset shadows |
 
 Credits:
 

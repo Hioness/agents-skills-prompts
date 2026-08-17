@@ -1,3 +1,8 @@
+---
+name: nub
+description: "Use when working with nub (https://nubjs.com), the Rust-based all-in-one toolkit that replaces node, tsx, npm, pnpm, npx, nvm, nodemon, and dotenv-cli — running TS/JSX files, package scripts, CLI packages, installs, Node version management, and file watching."
+---
+
 # Nub skill
 
 Use this skill when working with [nub](https://nubjs.com), the Rust-based all-in-one toolkit for Node.js.
