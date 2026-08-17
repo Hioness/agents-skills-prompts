@@ -1,40 +1,43 @@
 # prompts&config
 
-This repository is the single source of truth for agent system prompts and skills. It covers three AI coding harnesses: **OpenCode**, **Pi**, and **omp**. Changes propagate to each harness through symlinks.
+This repository contains skills and workflows that I have found useful when using agentic harnesses. I use them for work, for school, and for managing my computer. I also use them for side-projects that involve code, websites, or OSS forks that I start.
+
+It is not a prescription. Obviously, you get to use these tools however you want, and modify them however you want. I found them useful in the way I set them up. I hope you do too.
 
 ## Made for OpenCode
 
-The agent prompts in this repository target **OpenCode**. They are OpenCode agent prompts, rules, and skills, not generic model instructions.
+The `opencode/` folder is specific config for opencode.
 
-They come from two source prompts:
+- `opencode.json` contains the project config: the default agent, disabled built-in agents, and the extra instructions each agent loads.
+- `agents/` contains the five agent prompts: `architect.md`, `super-karp.md`, `plan-karp.md`, `loop.md`, and `minimal.md`.
 
-- The **KINGMODE** prompt that AI Code King made to improve open-source models.
-- A **Karpathy skill** that someone else made to steer Gemini models.
+The [KINGMODE prompt](https://github.com/aicodeking/yt-tutorial/blob/main/gemini-king-mode.md) and [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) inspired the agents' prompts. Those prompts are ARCHITECT, SUPER-KARP, and PLAN-KARP. The LOOP agent also adds insight from several articles on loops and YouTube guides by popular agentic engineers. The default minimal agent prompt is not based on these sources.
 
-Both shaped the `-KARP` prompts and `ARCHITECT`. The `-KARP` prompts are `SUPER-KARP` and `PLAN-KARP`.
+These prompts mostly help dumber or older models. Many models in the present day do just as well, or better, with no prompt at all. I would say this is the earliest cutoff point to ignore the prompts and use minimal. This matches the vibes I have seen online. Your results may vary:
 
-These prompts mostly help dumber or older models. Many models in the present day do just as well, or better, with no prompt at all. Models like GLM-5.3 or DeepSeek-V4-Flash do not need them.
+- Opus-4.5 +
+- GPT-5.4 + (not 5.4-mini, 5.6-Luna is fine)
+- Gemini-3.5 still needs them (3.6+ may work, I have not tested)
+- Kimi-K2.6 +
+- GLM-5.2 +
+- Deepseek-v4-flash-0731 +
 
-## Layout
+## Repository layout
 
 | Path | What it holds |
 |---|---|
-| `opencode.json` | OpenCode project config: default agent, disabled built-ins, instructions |
-| `.opencode/` | OpenCode per-project config: agent prompts and always-on instructions |
+| `opencode/` | OpenCode-specific config bundle: `opencode.json`, the always-on `working-dir.md`, and the five agent prompts in `agents/` |
+| `skills/` | Harness-agnostic skills, one directory per skill |
 
-| Path | What it holds |
-|---|---|
-| `agent-system-prompts/` | Mirror of the opencode agent config: all five agents |
-| `skills/` | Harness-agnostic skills |
-| `chat-bg-prompts/` | Personal chat background prompts, not tracked |
+Everything except the `opencode/` folder is harness-agnostic. The one skill tied to a specific harness is `subagent-loops`, marked as OpenCode-specific in the charts below.
 
 ## Skills
 
-Skills live in `skills/<name>/`. Each skill has a `SKILL.md` file with a name and a description. The harness uses the description to decide when to trigger the skill.
+Skills live in `skills/<name>/`. Each skill is a directory with a `SKILL.md` file. The file has a name and a description. The harness reads the description to decide when to trigger the skill. Symlink the directory into the skill directory of your harness, and the skill just works.
 
 | Skill | Purpose |
 |---|---|
-| html-presentation | Builds one dark-mode HTML file for specs, plans, code reviews, and prototypes |
+| html-presentation | One dark-mode HTML file for specs, plans, code reviews, and prototypes |
 | lakebed | Agent-native CLI and runtime for small full-stack TypeScript apps called capsules |
 | monospace-text | Dark academic reading pages with JetBrains Mono, sidebar TOC, and callout boxes |
 | serif-codex | Converts academic Markdown into a dark-mode HTML reading page with a warm library aesthetic |
@@ -48,71 +51,79 @@ Skills live in `skills/<name>/`. Each skill has a `SKILL.md` file with a name an
 
 | Skill | Purpose |
 |---|---|
-| subagent-loops | Launches and parallelizes loop subagents for autonomous iteration work |
+| subagent-loops | Launches and parallelizes loop subagents for autonomous iteration work. OpenCode-specific |
 | sumi-ink-wash | Japanese sumi ink wash design system with washi paper and vermilion accents |
 
+Credits:
+
+- [Theo](https://lakebed.dev/) built lakebed.
+- nocturne is an alternative to html-presentation.
+- The nub CLI lives at [nubjs.com](https://nubjs.com/).
+- The original serif-text skill and implementation follow [this video](https://youtu.be/uJblcC4lKYw?si=ZtCOycYKkZ4iWFpJ), which I have since refined.
+
 ## Agent system prompts
+
+The five agent prompts live in `opencode/agents/`. See [Made for OpenCode](#made-for-opencode) above for where they came from.
 
 | Agent | Purpose |
 |---|---|
 | architect | Opinionated senior engineer with HTML-first output for anything over 100 lines |
 | super-karp | Behavioral guidelines from the LLM coding pitfalls that Karpathy describes |
-| plan-karp | SUPER-KARP reoriented for plan mode: produce a plan, then stop |
+| plan-karp | A write and edit limited version of SUPER-KARP. It prevents the model from touching code when you only want to chat or plan |
 
 | Agent | Purpose |
 |---|---|
 | loop | Autonomous subagent that cycles explore, plan, execute, and review until it reaches the goal |
 | minimal | Bare-bones primary agent with no instructions |
 
-The files in `agent-system-prompts/` mirror the agent config in `~/.config/opencode/agent/`. The files in `.opencode/agents/` are symlinks to them.
-
 ## Usage
 
-### OpenCode in this repository
+### Skills in any harness
 
-Clone the repository and run OpenCode inside it. OpenCode loads `opencode.json` and `.opencode/` from the project root automatically.
-
-The config carries two pieces of advice:
-
-- Disable the built-in `build` and `plan` agents. They are not good. Make `minimal` the default. Switch to `architect` or `plan-karp` in the TUI.
-
-- Load extra instructions for the model. The config points at `~/.config/opencode/working-dir.md` (ignore outside repos) and `~/.config/opencode/skills/ste-writing/ste-always-on.md` (use STE in prose). Point the paths at `.opencode/working-dir.md` and `skills/ste-writing/ste-always-on.md` if you do not have those files.
-
-The config carries no plugins and no MCP servers. Add your own in your personal config.
-
-### OpenCode in your own config
-
-Copy the pieces you want:
+Symlink a skill into the skill directory of your harness:
 
 ```sh
-cp opencode.json ~/.config/opencode/opencode.json
-cp -rL .opencode/agents ~/.config/opencode/
-ln -s <repo>/skills/<name> ~/.config/opencode/skills/<name>
+ln -s <path-to-repo>/skills/<name> <harness-skill-directory>/<name>
 ```
 
-Then edit the two `instructions` paths in `opencode.json` to point at the files on your machine. The `-L` flag makes `cp` copy the symlinked prompts as real files. The `default_agent` and `agent` settings assume the agent files are present. Adjust them if you copy only part of the config.
+The skills are harness-agnostic, so the same directory works anywhere the harness reads `SKILL.md` files. Install only the skills you want.
 
-### Other harnesses
+### OpenCode config
 
-Symlink a skill into the skill directory of your harness.
-
-| Harness | Skill directory |
-|---|---|
-| OpenCode | `~/.config/opencode/skills/` |
-| Pi | `~/.pi/agent/skills/` |
-| omp | `~/.omp/agent/skills/` |
-
-Example:
+The `opencode/` folder mirrors the OpenCode global config. Copy the pieces into place:
 
 ```sh
-ln -s <repo>/skills/<name> ~/.config/opencode/skills/<name>
+mkdir -p ~/.config/opencode/agent
+cp opencode/opencode.json ~/.config/opencode/opencode.json
+cp opencode/working-dir.md ~/.config/opencode/working-dir.md
+cp opencode/agents/*.md ~/.config/opencode/agent/
 ```
 
-For agent prompts, copy the files into the agent directory of your harness. For OpenCode, that directory is `~/.config/opencode/agents/`.
+Then symlink the skills you want:
 
-## Not tracked
+```sh
+ln -s <path-to-repo>/skills/<name> ~/.config/opencode/skills/<name>
+```
 
-Some files stay out of version control. `chat-bg-prompts/` holds personal chat background prompts. `AGENTS.md` files hold internal configuration.
+Notes:
+
+- `opencode.json` disables the built-in `build` and `plan` agents and makes `minimal` the default. Switch to `architect` or `plan-karp` in the TUI when you want guidance.
+
+- The `instructions` paths point at `~/.config/opencode/working-dir.md` (work only inside the working directory) and `~/.config/opencode/skills/ste-writing/ste-always-on.md` (use STE in prose). Both files ship with this repo. `working-dir.md` is in `opencode/`, and the STE file ships with the `ste-writing` skill. Edit the paths if your files live elsewhere.
+
+- The config carries no plugins and no MCP servers. Add your own.
+
+- Copying overwrites any existing `opencode.json`. Back it up first if you have a personal config. The `default_agent` and `agent` settings assume the agent files are present. Adjust them if you copy only part of the config.
+
+## Installing with an agent
+
+Paste this into your agent to install the repo:
+
+> Clone `https://github.com/Hioness/agents-skills-prompts.git` to a directory of your choice.
+
+> 1. **Skills:** for each skill in `skills/`, symlink the directory into the skill directory of your harness (for OpenCode: `~/.config/opencode/skills/<name>`). The skills are harness-agnostic. Install the ones you want.
+> 2. **OpenCode config:** back up any existing `~/.config/opencode/opencode.json`, then copy `opencode/opencode.json` and `opencode/working-dir.md` into `~/.config/opencode/`, and `opencode/agents/*.md` into `~/.config/opencode/agent/` (create the `agent/` directory if needed).
+> 3. **Paths:** the `instructions` in `opencode.json` reference `~/.config/opencode/working-dir.md` and `~/.config/opencode/skills/ste-writing/ste-always-on.md`. Make sure both files exist: the working-dir copy from step 2 and the `ste-writing` skill symlink from step 1.
 
 ## License
 
