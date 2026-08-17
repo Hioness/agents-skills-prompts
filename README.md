@@ -38,7 +38,6 @@ Skills live in `skills/<name>/`. Each skill is a directory with a `SKILL.md` fil
 | Skill | Purpose |
 |---|---|
 | html-presentation | One dark-mode HTML file for specs, plans, code reviews, and prototypes |
-| ironvale | Industrial design system: chamfered rectangles, cream-on-dark, Space Mono + Barlow Condensed |
 | lakebed | Agent-native CLI and runtime for small full-stack TypeScript apps called capsules |
 | monospace-text | Dark academic reading pages with JetBrains Mono, sidebar TOC, and callout boxes |
 | serif-codex | Converts academic Markdown into a dark-mode HTML reading page with a warm library aesthetic |
@@ -61,7 +60,6 @@ Credits:
 - [Theo](https://lakebed.dev/) built lakebed.
 - nocturne is an alternative to html-presentation.
 - The nub CLI lives at [nubjs.com](https://nubjs.com/).
-- algorithmic-art is Apache-2.0 from [Anthropic's skills collection](https://github.com/anthropics/skills).
 - The original serif-text skill and implementation follow [this video](https://youtu.be/uJblcC4lKYw?si=ZtCOycYKkZ4iWFpJ), which I have since refined.
 
 ## Agent system prompts
