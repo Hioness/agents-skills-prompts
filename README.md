@@ -33,7 +33,7 @@ Everything except the `opencode/` folder is harness-agnostic. The one skill tied
 
 ## Skills
 
-Skills live in `skills/<name>/`. Each skill is a directory with a `SKILL.md` file. The file has a name and a description. The harness reads the description to decide when to trigger the skill. Symlink the directory into the skill directory of your harness, and the skill just works.
+Skills live in `skills/<name>/`. Each skill is a directory with a `SKILL.md` file. The file has a name and a description. The harness reads the description to decide when to trigger the skill. Symlink the directory into `.agents/skills/`, and the skill just works.
 
 | Skill | Purpose |
 |---|---|
@@ -80,17 +80,27 @@ The five agent prompts live in `opencode/agents/`. See [Made for OpenCode](#made
 
 ### Skills in any harness
 
-Symlink a skill into the skill directory of your harness:
+Skills use one universal layout. `.agents/skills/` holds project skills, and `~/.agents/skills/` holds global skills. The harnesses opencode, omp, pi, muse code, deepseek dsh, and codex read `SKILL.md` files from these folders natively.
+
+Global install:
 
 ```sh
-ln -s <path-to-repo>/skills/<name> <harness-skill-directory>/<name>
+ln -s <path-to-repo>/skills/<name> ~/.agents/skills/<name>
 ```
 
-The skills are harness-agnostic, so the same directory works anywhere the harness reads `SKILL.md` files. Install only the skills you want.
+Project install:
+
+```sh
+ln -s <path-to-repo>/skills/<name> <project>/.agents/skills/<name>
+```
+
+Claude does not read `.agents/`. It reads `.claude/skills/` and `~/.claude/skills/`, and its memory file is `CLAUDE.md` instead of `AGENTS.md`. Symlink the same skills into `~/.claude/skills/` if you use Claude.
+
+Install only the skills you want.
 
 ### OpenCode config
 
-The `opencode/` folder mirrors the OpenCode global config. Copy the pieces into place:
+The `.config/opencode/` and `.opencode/` folders hold OpenCode specifics. Skills live in `.agents/skills/`, not in these folders. The `opencode/` folder in this repo mirrors the global config. Copy the pieces into place:
 
 ```sh
 mkdir -p ~/.config/opencode/agent
@@ -99,17 +109,11 @@ cp opencode/working-dir.md ~/.config/opencode/working-dir.md
 cp opencode/agents/*.md ~/.config/opencode/agent/
 ```
 
-Then symlink the skills you want:
-
-```sh
-ln -s <path-to-repo>/skills/<name> ~/.config/opencode/skills/<name>
-```
-
 Notes:
 
 - `opencode.json` disables the built-in `build` and `plan` agents and makes `minimal` the default. Switch to `architect` or `plan-karp` in the TUI when you want guidance.
 
-- The `instructions` paths point at `~/.config/opencode/working-dir.md` (work only inside the working directory) and `~/.config/opencode/skills/ste-writing/ste-always-on.md` (use STE in prose). Both files ship with this repo. `working-dir.md` is in `opencode/`, and the STE file ships with the `ste-writing` skill. Edit the paths if your files live elsewhere.
+- The `instructions` paths point at `~/.config/opencode/working-dir.md` (work only inside the working directory) and `~/.agents/skills/ste-writing/ste-always-on.md` (use STE in prose). Both files ship with this repo. `working-dir.md` is in `opencode/`, and the STE file ships with the `ste-writing` skill. Edit the paths if your files live elsewhere.
 
 - The config carries no plugins and no MCP servers. Add your own.
 
@@ -121,9 +125,11 @@ Paste this into your agent to install the repo:
 
 > Clone `https://github.com/Hioness/agents-skills-prompts.git` to a directory of your choice.
 
-> 1. **Skills:** for each skill in `skills/`, symlink the directory into the skill directory of your harness (for OpenCode: `~/.config/opencode/skills/<name>`). The skills are harness-agnostic. Install the ones you want.
+> 1. **Skills:** for each skill in `skills/`, symlink the directory into `~/.agents/skills/` for a global install, or `.agents/skills/` for a project install. The harnesses opencode, omp, pi, muse code, deepseek dsh, and codex read skills from these folders. Install the ones you want.
 > 2. **OpenCode config:** back up any existing `~/.config/opencode/opencode.json`, then copy `opencode/opencode.json` and `opencode/working-dir.md` into `~/.config/opencode/`, and `opencode/agents/*.md` into `~/.config/opencode/agent/` (create the `agent/` directory if needed).
-> 3. **Paths:** the `instructions` in `opencode.json` reference `~/.config/opencode/working-dir.md` and `~/.config/opencode/skills/ste-writing/ste-always-on.md`. Make sure both files exist: the working-dir copy from step 2 and the `ste-writing` skill symlink from step 1.
+> 3. **Paths:** the `instructions` in `opencode.json` reference `~/.config/opencode/working-dir.md` and `~/.agents/skills/ste-writing/ste-always-on.md`. Make sure both files exist: the working-dir copy from step 2 and the `ste-writing` skill symlink from step 1.
+
+Claude does not read `.agents/`. It reads `.claude/skills/` and `~/.claude/skills/`, and its memory file is `CLAUDE.md` instead of `AGENTS.md`. Symlink the skills into `~/.claude/skills/` if you use Claude.
 
 ## License
 
