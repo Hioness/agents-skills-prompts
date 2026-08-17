@@ -61,6 +61,7 @@ Credits:
 - [Theo](https://lakebed.dev/) built lakebed.
 - nocturne is an alternative to html-presentation.
 - The nub CLI lives at [nubjs.com](https://nubjs.com/).
+- algorithmic-art is Apache-2.0 from [Anthropic's skills collection](https://github.com/anthropics/skills).
 - The original serif-text skill and implementation follow [this video](https://youtu.be/uJblcC4lKYw?si=ZtCOycYKkZ4iWFpJ), which I have since refined.
 
 ## Agent system prompts
