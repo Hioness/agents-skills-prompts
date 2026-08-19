@@ -3,7 +3,7 @@ name: sumi-ink-wash
 description: "Design system for the Sumi Ink Wash aesthetic: washi-paper palette, 5-level ink-load hierarchy, Shippori Mincho typography, vermilion hanko seal accent, paper grain texture. Use when building UI, web pages, or components in a Japanese sumi-ink-wash or zen-minimal style."
 ---
 
-# Sumi
+# Sumi Ink Wash
 
 ## When to use this style
 
@@ -11,7 +11,7 @@ When the output calls for a calm, minimal, ink-on-paper aesthetic inspired by Ja
 
 ## Visual Language
 
-- **Color**: Washi paper `#f4eedd` background. Ink tones span a hierarchy from light gray (`#8a8070`) to jet black (`#1a1a1a`). Accent is traditional vermilion (`#cc3333`) for stamp/seal moments.
+- **Color**: Washi paper `#f4eedd` background. Ink tones span the ink-load hierarchy from dilute wash `#a9a292` (`--ink4`) to deepest `#14110e` (`--ink0`). Accent is traditional vermilion `#b8342a` for stamp/seal moments.
 - **Selection highlight**: `--vermilion` (`#b8342a`) is the official text-selection highlight color. The `::selection` pseudo-element uses vermilion background with washi-paper text for a stamped-ink feel.
 - **Typography**: Shippori Mincho for headings and body, JetBrains Mono for code and data.
 - **Key elements**: Generous whitespace, ink-load hierarchy (thicker strokes for importance), sumi washes for backgrounds, vermilion seal/stamp accent, vertical rhythm inspired by Japanese calligraphy scrolls.
@@ -19,13 +19,14 @@ When the output calls for a calm, minimal, ink-on-paper aesthetic inspired by Ja
 ## Construction Rules
 
 - Page background is washi paper `#f4eedd` — warm, off-white, never pure white.
-- Text follows ink-load hierarchy: the most important content gets the darkest ink (`#1a1a1a`), secondary gets medium (`#4a4238`), tertiary is light wash (`#8a8070`).
+- Text follows ink-load hierarchy: the most important content gets the deepest ink (`#14110e`, `--ink0`), heavy prose `#2b2722`, body prose `#4d463d`, labels `#7a7062`, light wash `#a9a292`.
 - Borders are thin, dark lines — like sumi brush strokes. Use `1px solid` with ink colors.
-- Corners are sharp. No border-radius. No shadows.
-- Vermilion (`#cc3333`) is used sparingly — like a hanko stamp. Reserve for accent elements: active states, important badges, the single call-to-action.
+- Corners are near-sharp: `0px` on cards and containers, up to `3px` on tiny stamps and badges, `50%` only for circular dots and seal glyphs. No drop shadows — depth is ink-load weight (inset stamp rings and the narrow-screen nav overlay are the only exceptions).
+- Vermilion (`#b8342a`) is used sparingly — like a hanko stamp. Reserve for accent elements: active states, important badges, the single call-to-action.
 - Vertical `writing-mode` is acceptable for decorative or short-form content but never for body text.
+- The navigation shell is a mokuroku (目録) sidebar: kanji + label rows, with the active entry marked by a thin vermilion edge and a pale wash. It collapses to a kanji-only spine with the catalog title written vertically down the edge. Toggle is the vermilion 三 button. In the collapsed rail, hovering fans out every label as an unrolled paper tab; open/close animates with an overshoot ease and a staggered label cascade.
 - Generous padding and margin — whitespace is structural, not empty.
-- Code blocks use a light ink-wash background (`#e8e0cc`) with a thin charcoal border.
+- Code blocks sit on the inkstone — `--paper3` (`#e3ddc8`) — with a thin border.
 
 ## Token Override Preamble
 
@@ -55,8 +56,8 @@ This theme replaces the meta-skill's default dark palette with a **washi-paper a
 
 - **Palette:** Light washi paper (`#f4eedd`) background replaces dark base. Paper grain via SVG turbulence noise overlay at 0.5 opacity multiply.
 - **Typography:** Shippori Mincho (serif) for body and headings replaces Inter. JetBrains Mono retained for code and structural text.
-- **Border-radius:** Sharp (`0px`) everywhere — no rounding.
-- **Box-shadow:** None — depth carried by ink-load weight, not shadows.
+- **Border-radius:** Near-sharp — `0px` on containers, up to `3px` on stamps/badges, `50%` only for circular dots and seal glyphs.
+- **Box-shadow:** No drop shadows; depth is carried by ink-load weight. Inset 1px rings draw hanko stamp borders, and the narrow-screen nav overlay casts one soft shadow.
 - **Decoration:** Brush-stroke SVG rules under h2, hanko stamp badges with paper inset and -3deg rotation, vermilion seal motifs, gold brushed `.hl` highlights.
 
 ## Token System
@@ -101,5 +102,7 @@ All tokens are defined in `sumi-ink-wash.html` `:root`. Use these evocative name
 Use these token names exactly. Inventing aliases or one-off hex values breaks consistency across documents.
 
 ## Components
+
+- **Mokuroku sidebar (navigation):** collapsible catalog rail (目録). Expanded: 目録 title + document label, kanji + mono label rows, active entry gets a thin vermilion edge and a pale wash. Collapsed: kanji-only spine with vertical 目録 title and a small seal at the foot; hovering fans out every label as an unrolled paper tab (instant side-legend, click-through). Persists state via localStorage; open/close uses an overshoot ease with a staggered label cascade; on narrow screens the rail is a hidden overlay with a floating 三 toggle and backdrop.
 
 For the full component showcase and live examples, see `sumi-ink-wash.html` in this directory.
