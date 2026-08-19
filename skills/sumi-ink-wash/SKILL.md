@@ -24,7 +24,7 @@ When the output calls for a calm, minimal, ink-on-paper aesthetic inspired by Ja
 - Corners are near-sharp: `0px` on cards and containers, up to `3px` on tiny stamps and badges, `50%` only for circular dots and seal glyphs. No drop shadows — depth is ink-load weight (inset stamp rings and the narrow-screen nav overlay are the only exceptions).
 - Vermilion (`#b8342a`) is used sparingly — like a hanko stamp. Reserve for accent elements: active states, important badges, the single call-to-action.
 - Vertical `writing-mode` is acceptable for decorative or short-form content but never for body text.
-- The navigation shell is a mokuroku (目録) sidebar: kanji + label rows, with the active entry marked by a thin vermilion edge and a pale wash. It collapses to a kanji-only spine with the catalog title written vertically down the edge. Toggle is the vermilion 三 button. In the collapsed rail, hovering fans out every label as an unrolled paper tab; open/close animates with an overshoot ease and a staggered label cascade.
+- The navigation shell is a mokuroku (目録) sidebar: kanji + label rows, with the active entry marked by a thin vermilion edge and a pale wash. It collapses to a kanji-only spine with the catalog title written vertically down the edge — the spine text is always the literal 目録 glyphs, the same fixed title as the expanded header, never a section kanji, row label, or document name. Toggle is the vermilion 三 button. In the collapsed rail, hovering fans out every label as an unrolled paper tab; open/close animates with an overshoot ease and a staggered label cascade.
 - Generous padding and margin — whitespace is structural, not empty.
 - Code blocks sit on the inkstone — `--paper3` (`#e3ddc8`) — with a thin border.
 
@@ -103,6 +103,6 @@ Use these token names exactly. Inventing aliases or one-off hex values breaks co
 
 ## Components
 
-- **Mokuroku sidebar (navigation):** collapsible catalog rail (目録). Expanded: 目録 title + document label, kanji + mono label rows, active entry gets a thin vermilion edge and a pale wash. Collapsed: kanji-only spine with vertical 目録 title and a small seal at the foot; hovering fans out every label as an unrolled paper tab (instant side-legend, click-through). Persists state via localStorage; open/close uses an overshoot ease with a staggered label cascade; on narrow screens the rail is a hidden overlay with a floating 三 toggle and backdrop.
+- **Mokuroku sidebar (navigation):** collapsible catalog rail (目録). Expanded: 目録 title + document label, kanji + mono label rows, active entry gets a thin vermilion edge and a pale wash. Collapsed: kanji-only spine with the vertical 目録 title — the static catalog title, identical glyphs to the expanded header, never a section or row kanji — and a small version seal at the foot; hovering fans out every label as an unrolled paper tab (instant side-legend, click-through). Persists state via localStorage; open/close uses an overshoot ease with a staggered label cascade; on narrow screens the rail is a hidden overlay with a floating 三 toggle and backdrop. Copy this component's shell markup, CSS, and JS verbatim from `sumi-ink-wash.html`; per document only the nav rows, nav-title, seal text, and meta-text change.
 
 For the full component showcase and live examples, see `sumi-ink-wash.html` in this directory.
