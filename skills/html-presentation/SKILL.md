@@ -1,13 +1,13 @@
 ---
 name: html-presentation
-description: "Produces a single dark-mode HTML file for complex, exploratory, or shareable output — specs, plans, code reviews, research, prototypes, custom editors. Use when output exceeds ~100 lines in markdown or is meant to be read, explored, or shared."
+description: "Produces a single-file HTML presentation with embedded light/dark themes (canonical dark, nocturne dark, sumi-ink-wash light). Picks a theme at random (50/50 light/dark) unless the user specifies one. Use when output exceeds ~100 lines in markdown or is meant to be read, explored, or shared — specs, plans, code reviews, research, prototypes, custom editors."
 ---
 
 # HTML Presentation
 
 ## What this skill produces
 
-A single-file dark-mode HTML document with a navigable layout (collapsible
+A single-file HTML document with a navigable layout (collapsible
 sidebar rail, section anchors, responsive column), full component library,
 and one-click markdown export. Designed for complex, structured output that
 has more than
@@ -15,22 +15,32 @@ one section — specs, plans, code reviews, research synthesis, prototypes,
 design variants, parameter tuning, custom editors, and any output with
 tabular, navigable, or multi-section content.
 
+The skill now embeds **light and dark themes** as swappable shells. Unless
+the user pins a theme, the agent picks one at random (coin-flip 50/50
+light vs dark, then uniform within the pool) so repeated use doesn't get
+boring.
+
 When using this skill, also include a short markdown summary in the
 conversation unless the user asks for HTML only.
 
 ## Authority boundary
 
-This skill is three layers with one authority per layer, zero overlap:
+This skill is three layers + theme pool with one authority per layer, zero overlap:
 
 - `SKILL.md` — behavioural law, roles, policy, writing rules, archetypes,
-  export contract, inheritance law. No hex values, no CSS.
+  export contract, inheritance law, theme registry + picker. No hex values, no CSS.
 - `html-presentation-style-guide.html` — visual law, component demonstrations,
   typography scale, spacing scale, full component CSS. Source of truth for how
   things look, not how to use them.
-- `skeleton.html` — the bare template. Exact values, layout shell implementation,
+- `skeleton.html` — the bare template (canonical dark). Exact values, layout shell implementation,
   print block, accessibility wiring, clipboard wiring, `copyMarkdown()` logic.
-  Single source of truth for how the shell is built.
-A model generating HTML **always starts from `skeleton.html`**. Replace the
+  Single source of truth for how the canonical shell is built.
+- `themes/` — theme pool: `themes/dark/*.html` and `themes/light/*.html`.
+  Each file is a self-contained shell (its own `:root` tokens, fonts, layout
+  variant). No theme depends on another skill.
+
+A model generating HTML **always starts from the selected theme's HTML**
+(`skeleton.html` for canonical, or one file from `themes/`). Replace the
 marked `<!-- CONTENT BEGIN -->` ... `<!-- CONTENT END -->` region only.
 Do not rewrite the shell. Do not inline hex; use the token classes.
 
@@ -51,8 +61,10 @@ The skeleton defines the token vocabulary; this file defines the roles.
 - Selection (`--selection`): text selection highlight (`::selection` background).
 - Optional (`--hl`, `--hl-bg`, `--num`): sparingly.
 
-No invented aliases or one-off hex outside `skeleton.html`'s `:root`.
-Style guide + skeleton share the same `:root` block.
+No invented aliases or one-off hex outside the selected shell's `:root`.
+Style guide + skeleton share the same `:root` block. Theme shells declare
+their own `:root` overrides (e.g. `--glow` for nocturne, `--paper`/`--ink`
+for sumi) but keep the same role mapping.
 
 ## Layout shell
 
@@ -81,24 +93,66 @@ narrow screens.
 - Left: document identifier and version
 - Right: a single export action — "copy markdown" (no print button, no copy-link/share)
 
-See `skeleton.html` for the exact markup.
+See `skeleton.html` for the exact markup. Theme shells may override rail
+width/position (e.g. nocturne's 230px sticky left-rail, sumi's mokuroku
+sidebar) — read the selected theme's HTML for its shell.
+
+## Theme Registry
+
+Themes are grouped by mode so the random picker can flip 50/50 light vs dark
+even when counts are uneven. Each theme is a standalone HTML shell in `themes/`.
+
+| Theme | File | Mode | Vibe |
+|---|---|---|---|
+| canonical | `skeleton.html` | dark | neutral dark, free-floating rail, Inter + JetBrains Mono |
+| nocturne | `themes/dark/nocturne.html` | dark | deep gray `#08090c` + violet glow `#c8b6ff`, Fraunces + JetBrains Mono, 230px sticky left-rail |
+| sumi-ink-wash | `themes/light/sumi-ink-wash.html` | light | washi paper `#f4eedd` + vermilion `#b8342a`, Shippori Mincho + JetBrains Mono, mokuroku sidebar |
+
+Add new themes by dropping a self-contained HTML shell into `themes/dark/` or
+`themes/light/` and adding one row here. No other skill needs to reference it.
+
+## Theme Selection (random picker)
+
+Pick the shell **before** reading any HTML. Load only the selected file.
+
+1. **If user pinned a theme** — name (`nocturne`, `sumi`, `canonical`) or mode
+   (`light`, `dark`, `use a light theme`) — filter to that pool/theme and pick
+   uniformly within it. `shuf -i 1-N -n 1` if you have bash, otherwise an
+   internal random choice. Honour the pin exactly.
+
+2. **Otherwise (default — no preference):**
+   a. Flip a coin: `shuf -i 1-2 -n 1` → `1` = dark pool, `2` = light pool. This
+      keeps light/dark 50/50 even though the pools have different sizes today
+      (dark=2, light=1). If a pool is empty, use the other.
+   b. Pick uniformly within the chosen pool. Dark: `shuf -i 1-2 -n 1` → 1=canonical,
+      2=nocturne. Light: only sumi-ink-wash today → no roll needed; when light
+      gains more themes, `shuf -i 1-N -n 1` within light.
+   c. Load only that file. Do not read the other theme shells.
+
+3. **Announce the roll** in the chat summary: e.g. `Rolled 2/1 light → sumi-ink-wash`
+   or `Flipped DARK (1/2) → nocturne`. One line is enough — don't list the whole registry.
+
+Anti-repeat (optional but nice): if `temp/last-theme.txt` exists and the roll
+matches it, re-roll once. Then `echo <theme> > temp/last-theme.txt`.
 
 ## Palette and theme contract
 
-- Default palette is dark. Typography is two fonts (Inter for prose, JetBrains
+- Default palette is dark (canonical `skeleton.html`). Typography is two fonts (Inter for prose, JetBrains
   Mono for code/structure), hard limit. No gradients as default.
-- Sibling themes may override palette by declaring an explicit opt-in preamble
-  in their SKILL.md: which tokens they override, which rules they flex.
-- System-level rules always inherit to all themes — writing rules, export
+- Themes override palette by declaring their own `:root` tokens in their HTML shell.
+  Which tokens they override and which rules they flex is documented in that shell's
+  header comment. No cross-skill SKILL.md preamble needed.
+- System-level rules always apply to all themes — writing rules, export
   contract, accessibility, and print. Theme-level rules (palette values, fonts,
-  radius, background art) may be overridden by the theme.
+  radius, background art, rail variant) may be overridden by the theme shell.
 
 ## Construction rules
 
-- **Skeleton as copy-start.** Always begin from `skeleton.html`. Replace the
+- **Theme as copy-start.** Always begin from the selected theme's HTML (`skeleton.html` or `themes/*/*.html`). Replace the
   marked CONTENT block. Do not rewrite shell, head font imports, or JS helpers.
   When adding sections, add matching rail links (numbered `00`, `01`, ... in
-  order) and keep the `#railToggle` wiring untouched.
+  order) and keep the `#railToggle` wiring untouched (or the theme's equivalent
+  toggle — e.g. sumi's `三`).
 - **Code is plain by default.** Illustrative code uses `<pre><code>` in `--fg`,
   zero extra markup. No required per-token `.kw/.fn/.str/.cmt/.num/.op` spans.
   Wrap with those spans only when hand-highlighting a demo or an opt-in example.
@@ -118,7 +172,7 @@ See `skeleton.html` for the exact markup.
 - **Accessibility.** `aria-hidden="true"` on visual-only line numbers (`.ln`,
   `.dl-nums`, `.dl-gut`). Honour `prefers-reduced-motion`. Clipboard must fall
   back to `execCommand('copy')` and surface failure feedback.
-- **Print.** A `@media print` block lives once in the skeleton and handles
+- **Print.** A `@media print` block lives once in each shell and handles
   light-on-white for any derived document. Tints are 12–16% on white
   (8% is near-invisible on paper). Base 8% on dark is intentional — background
   darkness compensates; the print bump is its known consequence, not a
@@ -169,14 +223,14 @@ the task matches an archetype, structure the document after it:
 | Custom editor / dashboard | `controls` + `preview` | `.demo-area` (sandbox), `.stat-card`, `kbd` |
 
 Each archetype is enumerable from this file without opening the style guide.
-For class names and exact values, read `skeleton.html` and
+For class names and exact values, read the selected theme's HTML and
 `html-presentation-style-guide.html`.
 
 ## Component reference
 
 For the full component library (19 component types — `.file-list`, `.action-list`,
 `.legend`, `.h2-badge`, tables, plus the 15 listed below), class names, and
-exact values, **read `skeleton.html` and the style guide at
+exact values, **read the selected theme's HTML and the style guide at
 `html-presentation-style-guide.html`**.
 
 The style guide is itself an implementation of the system — every component

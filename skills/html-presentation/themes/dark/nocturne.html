@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HTML Presentation — Redraft v2.0 · Nocturne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08090c;
+  --bg2:#0d0f13;
+  --bg3:#121419;
+  --line:rgba(255,255,255,.07);
+  --line-2:rgba(255,255,255,.13);
+  --fg:#f4f1ea;
+  --fg2:#a7a39b;
+  --fg3:#6b6760;
+  --glow:#c8b6ff;       /* luminous violet */
+  --glow-dim:rgba(200,182,255,.12);
+  --amber:#ffd9a0;
+  --green:#9ae6b4;
+  --red:#ff9aa8;
+  --blue:#a5c8ff;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --serif:'Fraunces',Georgia,serif;
+  --radius:10px;
+  --svg-stroke:#2a2a30;
+  --focus:rgba(200,182,255,.55);
+}
+html{color-scheme:dark;font-size:16px;scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(120% 80% at 50% -10%,rgba(200,182,255,.06),transparent 55%),
+    radial-gradient(100% 60% at 50% 110%,rgba(0,0,0,.6),transparent 60%),
+    var(--bg);
+  color:var(--fg);font-family:var(--serif);line-height:1.7;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+  background-attachment:fixed;overflow-x:hidden;
+}
+a{color:var(--glow);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:6px}
+::selection{background:rgba(200,182,255,.35);color:var(--fg)}
+::-moz-selection{background:rgba(200,182,255,.35);color:var(--fg)}
+
+/* ── SHELL ─────────────────────────────────────────────── */
+.shell{display:grid;grid-template-columns:230px 1fr;max-width:1140px;margin:0 auto;gap:0}
+.rail{position:sticky;top:0;height:100vh;overflow:auto;padding:2.4rem 1.4rem;border-right:1px solid var(--line);
+  font-family:var(--mono);font-size:.7rem;background:var(--bg2)}
+.rail .brand{font-family:var(--serif);font-weight:600;font-size:1.05rem;color:var(--fg);letter-spacing:-.01em;margin-bottom:.2rem}
+.rail .sub{color:var(--fg3);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.6rem}
+.rail nav{display:flex;flex-direction:column;gap:.15rem}
+.rail nav a{color:var(--fg2);padding:.32rem .6rem;border-radius:6px;display:flex;gap:.6rem;align-items:center}
+.rail nav a:hover{color:var(--fg);background:var(--bg3);text-decoration:none}
+.rail nav a.active{color:var(--glow);background:var(--glow-dim)}
+.rail nav a .n{color:var(--fg3);font-size:.6rem;opacity:.6}
+.rail .foot{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--fg3);font-size:.6rem;line-height:1.6}
+
+main{padding:3.2rem 3rem 5rem;min-width:0}
+.eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--glow);opacity:.8;margin-bottom:.6rem}
+h1{font-family:var(--serif);font-weight:500;font-size:2.8rem;line-height:1.05;letter-spacing:-.02em;color:var(--fg);margin-bottom:.8rem}
+h1 em{font-style:italic;color:var(--glow)}
+.lede{font-size:1.08rem;color:var(--fg2);max-width:58ch;font-weight:400}
+h2{font-family:var(--serif);font-weight:500;font-size:1.6rem;letter-spacing:-.01em;color:var(--fg);margin:3.4rem 0 1.1rem;
+  scroll-margin-top:2rem;display:flex;align-items:baseline;gap:.7rem}
+h2 .idx{font-family:var(--mono);font-size:.7rem;color:var(--glow);opacity:.7}
+h3{font-family:var(--mono);font-weight:500;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;margin:1.6rem 0 .5rem;color:var(--fg)}
+h4{font-family:var(--mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.12em;color:var(--fg3);margin:.9rem 0 .35rem}
+p{font-size:.98rem;color:var(--fg2);line-height:1.8;max-width:64ch}
+p+p{margin-top:.7rem}
+code{font-family:var(--mono);font-size:.8rem;background:var(--bg3);padding:.12em .4em;border-radius:5px;color:var(--glow)}
+li{font-size:.95rem;color:var(--fg2);line-height:1.8}
+
+/* ── COMPONENTS ────────────────────────────────────────── */
+.callout{background:var(--bg2);border:1px solid var(--line-2);border-left:2px solid var(--glow);
+  padding:.95rem 1.2rem;margin:1rem 0;border-radius:0 var(--radius) var(--radius) 0;font-size:.9rem;color:var(--fg2)}
+.callout strong{display:block;color:var(--fg);margin-bottom:.25rem;font-family:var(--mono);font-size:.68rem;
+  text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.callout.warn{border-left-color:var(--amber)}.callout.danger{border-left-color:var(--red)}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;margin:1.2rem 0;
+  background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.stat{background:var(--bg2);padding:1.1rem}
+.stat .n{font-family:var(--serif);font-weight:500;font-size:1.9rem;color:var(--glow);line-height:1}
+.stat .l{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;color:var(--fg3);margin-top:.4rem}
+
+.swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:1px;margin:1rem 0;
+  background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.swatch{background:var(--bg2)}
+.swatch .c{height:52px}
+.swatch .i{padding:.5rem .6rem;font-family:var(--mono);font-size:.62rem}
+.swatch .nm{color:var(--fg);display:block;font-weight:500}
+.swatch .vl{color:var(--fg3);display:block;margin-top:3px;font-size:.58rem}
+
+.tag{display:inline-block;font-family:var(--mono);font-size:.6rem;font-weight:500;padding:.12rem .5rem;border-radius:999px;
+  border:1px solid;letter-spacing:.03em}
+.tag.deliverable{color:var(--green);border-color:rgba(154,230,180,.3);background:rgba(154,230,180,.07)}
+.tag.temp{color:var(--amber);border-color:rgba(255,217,160,.3);background:rgba(255,217,160,.07)}
+.tag.debate{color:var(--blue);border-color:rgba(165,200,255,.3);background:rgba(165,200,255,.07)}
+.tag.remove{color:var(--red);border-color:rgba(255,154,168,.3);background:rgba(255,154,168,.07)}
+.tag.done{color:var(--fg2);border-color:var(--line-2);background:var(--bg3)}
+
+.hl{background:rgba(255,217,160,.14);color:var(--amber);padding:.08em .3em;border-radius:5px;font-weight:500;
+  box-shadow:0 0 0 1px rgba(255,217,160,.18)}
+
+.badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.6rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:.04em;padding:2px 9px;border-radius:999px;border:1px solid}
+.badge .bd{width:5px;height:5px;border-radius:50%;background:currentColor}
+.badge.added{color:var(--green);background:rgba(154,230,180,.08);border-color:rgba(154,230,180,.25)}
+.badge.removed{color:var(--red);background:rgba(255,154,168,.08);border-color:rgba(255,154,168,.25)}
+.badge.modified{color:var(--blue);background:rgba(165,200,255,.08);border-color:rgba(165,200,255,.25)}
+.badge.pending{color:var(--amber);background:rgba(255,217,160,.08);border-color:rgba(255,217,160,.25)}
+.badge.draft{color:var(--fg3);background:var(--bg3);border-color:var(--line-2)}
+.badge.breaking{color:var(--red);background:rgba(255,154,168,.12);border-color:rgba(255,154,168,.45);font-weight:700}
+
+.code-block{border:1px solid var(--line-2);border-radius:var(--radius);overflow:hidden;font-family:var(--mono);
+  font-size:.8rem;line-height:1.65;margin:1rem 0;background:var(--bg2)}
+.code-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .9rem;background:var(--bg3);border-bottom:1px solid var(--line)}
+.code-lang{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fg3)}
+.cb-copy{font-family:var(--mono);font-size:.62rem;color:var(--fg3);background:none;border:1px solid var(--line-2);
+  border-radius:6px;padding:2px 10px;cursor:pointer;transition:.15s}
+.cb-copy:hover{color:var(--fg);border-color:var(--fg3)}
+.code-body{overflow-x:auto}
+.cl{display:flex}.cl:hover{background:rgba(200,182,255,.04)}
+.ln{width:42px;flex-shrink:0;text-align:right;padding:0 .5rem;color:var(--fg3);user-select:none;border-right:1px solid var(--line)}
+.lc{padding:0 1rem;white-space:pre;color:var(--fg)}
+.kw{color:var(--blue)}.fn{color:var(--glow)}.str{color:var(--green)}.cmt{color:var(--fg3);font-style:italic}.num{color:var(--amber)}.op{color:var(--fg2)}
+
+.diff-block{border:1px solid var(--line-2);border-radius:var(--radius);overflow:hidden;font-family:var(--mono);
+  font-size:.8rem;line-height:1.65;margin:1rem 0;background:var(--bg2)}
+.diff-head{display:flex;justify-content:space-between;padding:.5rem .9rem;background:var(--bg3);border-bottom:1px solid var(--line)}
+.diff-name{color:var(--fg)}
+.diff-stats{display:flex;gap:.7rem;font-size:.7rem}.ds-a{color:var(--green)}.ds-d{color:var(--red)}
+.diff-hunk{padding:3px .9rem;background:rgba(165,200,255,.08);color:var(--blue);font-size:.7rem;border-bottom:1px solid var(--line)}
+.dl{display:flex}
+.dl-nums{display:flex;flex-shrink:0;user-select:none}
+.dl-num{width:38px;text-align:right;padding:0 .4rem;color:var(--fg3);border-right:1px solid var(--line)}
+.dl-gut{width:22px;text-align:center;font-weight:700;color:var(--fg3);border-right:1px solid var(--line)}
+.dl-content{padding:0 .9rem;white-space:pre;flex:1;color:var(--fg2)}
+.dl.add{background:rgba(154,230,180,.06)}.dl.add .dl-gut{color:var(--green)}
+.dl.del{background:rgba(255,154,168,.06)}.dl.del .dl-gut{color:var(--red)}
+.dl.ctx .dl-gut{color:var(--fg3)}
+.di-add{background:rgba(154,230,180,.22);border-radius:3px;padding:0 1px}
+.di-del{background:rgba(255,154,168,.22);border-radius:3px;padding:0 1px;text-decoration:line-through}
+
+.file-tree{font-family:var(--mono);font-size:.8rem;line-height:1.95;background:var(--bg2);border:1px solid var(--line-2);
+  border-radius:var(--radius);padding:1rem;margin:1rem 0}
+.ft-row{display:flex;align-items:center;gap:.4rem;color:var(--fg2)}
+.ft-row.dir .ft-n{color:var(--glow);font-weight:500}
+.ft-row.add .ft-n{color:var(--green)}.ft-row.del .ft-n{color:var(--red);text-decoration:line-through}
+.ft-row.mod .ft-n{color:var(--blue)}
+.ft-badge{font-size:.56rem;padding:0 6px;border-radius:999px;margin-left:auto;font-family:var(--mono)}
+.ft-badge.add{background:rgba(154,230,180,.1);color:var(--green)}
+.ft-badge.del{background:rgba(255,154,168,.1);color:var(--red)}
+.ft-badge.mod{background:rgba(165,200,255,.1);color:var(--blue)}
+
+.file-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.35rem}
+.file-list li{display:flex;align-items:center;gap:.4rem;color:var(--fg2);font-size:.9rem}
+
+.rule-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.55rem}
+
+.entity-card{background:var(--bg2);border:1px solid var(--line-2);border-radius:var(--radius);padding:1.4rem;margin:1.2rem 0}
+.entity-card.active{border-left:2px solid var(--glow)}
+.entity-card h3{margin:0 0 .2rem;display:flex;align-items:center;gap:.5rem;font-family:var(--serif);font-weight:500;
+  font-size:1.05rem;text-transform:none;letter-spacing:0;color:var(--fg)}
+.ec-path{font-family:var(--mono);font-size:.7rem;color:var(--fg3);margin-bottom:.8rem}
+
+.analysis{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:1.2rem 0;background:var(--line);
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.analysis-col{padding:1.1rem;background:var(--bg2)}
+.analysis-col ul{list-style:none;padding:0;margin:.4rem 0;display:flex;flex-direction:column;gap:.45rem}
+.analysis-col li{font-size:.9rem;color:var(--fg2);padding-left:1.2rem;position:relative;line-height:1.55}
+.analysis-col li::before{position:absolute;left:0;font-family:var(--mono);font-weight:700}
+.analysis-col.pros h4{color:var(--green)}.analysis-col.cons h4{color:var(--red)}
+.analysis-col.pros li::before{content:'+';color:var(--green)}
+.analysis-col.cons li::before{content:'−';color:var(--red)}
+
+.recommendation{background:var(--glow-dim);border:1px solid rgba(200,182,255,.3);border-radius:var(--radius);
+  padding:1.4rem;margin:1.2rem 0}
+.recommendation h3{font-family:var(--serif);font-weight:500;font-size:1rem;color:var(--glow);margin:0 0 .4rem;text-transform:none;letter-spacing:0}
+.recommendation p{font-size:.92rem;color:var(--fg2)}
+
+.option-header{display:flex;align-items:baseline;gap:.7rem;margin:1.8rem 0 .5rem}
+.option-num{font-family:var(--mono);font-size:.72rem;color:var(--glow);font-weight:500}
+.option-title{font-family:var(--serif);font-weight:500;font-size:1.15rem;color:var(--fg)}
+
+.demo-area{background:var(--bg2);border:1px dashed var(--line-2);border-radius:var(--radius);padding:2.2rem;
+  margin:1rem 0;position:relative}
+.demo-label{position:absolute;top:.7rem;left:.9rem;font-family:var(--mono);font-size:.58rem;color:var(--fg3);
+  text-transform:uppercase;letter-spacing:.1em}
+
+.table-wrap{border:1px solid var(--line-2);border-radius:var(--radius);overflow-x:auto;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{text-align:left;padding:.6rem .9rem;background:var(--bg3);border-bottom:1px solid var(--line-2);
+  font-family:var(--mono);font-weight:500;color:var(--fg);font-size:.66rem;text-transform:uppercase;letter-spacing:.05em}
+td{padding:.55rem .9rem;border-bottom:1px solid var(--line);color:var(--fg2);vertical-align:top}
+td.mono{font-family:var(--mono);font-size:.78rem;color:var(--glow);word-break:break-all}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+
+.plan{display:flex;flex-direction:column}
+.plan-step{display:flex;gap:1.1rem}
+.plan-ind{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.plan-dot{width:24px;height:24px;border-radius:50%;border:1px solid var(--line-2);background:var(--bg);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.6rem;color:var(--fg3);z-index:1}
+.plan-dot.done{border-color:var(--green);background:rgba(154,230,180,.1);color:var(--green)}
+.plan-dot.active{border-color:var(--glow);background:var(--glow-dim);color:var(--glow)}
+.plan-line{width:1px;flex:1;background:var(--line);margin:3px auto;min-height:22px}
+.plan-body{padding-bottom:1.3rem;flex:1}
+.plan-title{font-family:var(--mono);font-size:.85rem;font-weight:500;color:var(--fg);margin-bottom:.2rem}
+.plan-step.done-step .plan-title{color:var(--fg3)}
+.plan-desc{font-size:.85rem;color:var(--fg2)}
+
+kbd{font-family:var(--mono);font-size:.7rem;background:var(--bg3);padding:2px 7px;border:1px solid var(--line-2);
+  border-radius:6px;color:var(--fg2);display:inline-block}
+
+.diagram-wrap{border:1px solid var(--line-2);border-radius:var(--radius);padding:1.5rem;margin:1rem 0;background:var(--bg2);overflow-x:auto}
+.diagram-svg{width:100%;min-width:520px;height:auto;display:block}
+
+.type-row{display:flex;align-items:baseline;gap:1.5rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
+.type-meta{width:140px;flex-shrink:0;font-family:var(--mono);font-size:.62rem;color:var(--fg3)}
+.type-spec{display:block;margin-top:2px;color:var(--fg3);opacity:.7}
+.space-row{display:flex;align-items:center;gap:1rem;margin:.3rem 0}
+.space-meta{font-family:var(--mono);font-size:.66rem;color:var(--fg3);width:120px;flex-shrink:0}
+.space-bar{height:6px;background:var(--glow);border-radius:99px;opacity:.7;box-shadow:0 0 8px rgba(200,182,255,.4)}
+
+footer{border-top:1px solid var(--line);padding:1.4rem 3rem;display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:.7rem;font-family:var(--mono);font-size:.68rem;color:var(--fg3)}
+.export-btn{font-family:var(--mono);font-size:.66rem;color:var(--glow);background:var(--glow-dim);
+  border:1px solid rgba(200,182,255,.3);border-radius:8px;padding:6px 14px;cursor:pointer;transition:.15s}
+.export-btn:hover{background:rgba(200,182,255,.2)}
+
+@media(max-width:860px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+  .rail nav{flex-direction:row;flex-wrap:wrap}.rail nav a{border:1px solid var(--line);border-radius:var(--radius)}
+  main{padding:2.4rem 1.3rem 3.5rem}
+  footer{padding:1.3rem 1.3rem}
+  .analysis{grid-template-columns:1fr}
+}
+@media(max-width:400px){
+  .rail .sub,.rail .foot{font-size:.52rem}
+  .rail{padding:1rem .7rem}
+  .rail nav a{padding:.22rem .4rem;font-size:.58rem;gap:.3rem}
+  .rail nav a .n{display:none}
+  main{padding:1.4rem .6rem 2.5rem}
+  h1{font-size:1.8rem}
+  h2{font-size:1.2rem}
+  footer{padding:.8rem .6rem;flex-direction:column;text-align:center}
+  footer .export-btn{width:100%;text-align:center}
+  .code-body{font-size:.7rem}
+  .plan-step{gap:.6rem}
+  .type-row{flex-direction:column;gap:.3rem}
+  .type-meta{width:auto}
+  .diagram-svg{min-width:280px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  body{background:#fff!important;color:#111!important}
+  .shell{grid-template-columns:1fr;max-width:none}
+  .rail{display:none}
+  main{padding:0}
+  *,*::before,*::after{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
+  h1,h2,h3,h4,th,.diff-name,.plan-title{color:#111!important}
+  p,li,td{color:#333!important}
+  code,.ec-path,.type-meta,.space-meta,.mono,.ln,.dl-num{color:#555!important}
+  .callout{background:#f4f4f5!important;border-left-color:#7c3aed!important}
+  .callout.warn{border-left-color:#b45309!important}.callout.danger{border-left-color:#b91c1c!important}
+  .recommendation{background:#f5f3ff!important;border-color:#7c3aed!important}
+  .diff-hunk{background:#eef2ff!important}
+  .dl.add{background:rgba(34,197,94,.1)!important}.dl.del{background:rgba(239,68,68,.1)!important}
+  .hl{background:rgba(217,119,6,.18)!important;color:#7c2d12!important;box-shadow:none!important}
+  .code-block,.diff-block,.file-tree,.entity-card,.table-wrap,.diagram-wrap,.stat,.swatch,.analysis{border-color:#ccc!important;background:#fff!important}
+  .code-head,.diff-head,th{background:#f4f4f5!important}
+  .stat,.swatch{border-color:#ccc!important}
+  .tag,.badge{background:#fff!important;color:#111!important;border-color:#999!important}
+  footer{border-color:#ccc!important}.export-btn{display:none}
+  section,.entity-card,.table-wrap,.code-block,.diff-block,.diagram-wrap,.recommendation{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- LEFT RAIL INDEX -->
+  <aside class="rail">
+    <div class="brand">html-presentation / style-guide</div>
+    <div class="sub">nocturne · redraft</div>
+    <nav>
+      <a href="#overview" class="active" aria-current="true"><span class="n">00</span> Overview</a>
+      <a href="#colors"><span class="n">01</span> Color tokens</a>
+      <a href="#type"><span class="n">02</span> Typography</a>
+      <a href="#spacing"><span class="n">03</span> Spacing</a>
+      <a href="#layout"><span class="n">04</span> Layout</a>
+      <a href="#code"><span class="n">05</span> Code blocks</a>
+      <a href="#diffs"><span class="n">06</span> Diff blocks</a>
+      <a href="#cards"><span class="n">07</span> Entity cards</a>
+      <a href="#decisions"><span class="n">08</span> Decisions</a>
+      <a href="#tables"><span class="n">09</span> Tables</a>
+      <a href="#plan"><span class="n">10</span> Plan</a>
+      <a href="#rules"><span class="n">11</span> Writing rules</a>
+    </nav>
+    <div class="foot">REDRAFT v2.0 · 2026-07-18<br/>hy3-free<br/>19 components · 1 export</div>
+  </aside>
+
+  <main>
+    <div class="eyebrow">Style Guide / Redraft</div>
+    <h1>Read it in the <em>dark</em>.</h1>
+    <p class="lede">A nocturne take on the html-presentation design system — a dim, luminous reading surface with a quiet left-rail index. Fraunces serif for prose, hairline dividers, and a soft violet glow doing the accent work that bright color usually does.</p>
+
+    <section id="overview">
+      <h2><span class="idx">00</span> Overview</h2>
+      <p>Single-file HTML documents for presenting complex technical output: specs, plans, code reviews, research synthesis, prototypes. Every element earns its presence. This redraft treats the document as a <span class="hl">calm surface to read at 1am</span> — low contrast, generous leading, and a single glow color.</p>
+      <div class="callout"><strong>What changed in v2.0</strong> Added <code>.hl</code> inline highlight — amber at 15% fill, for one load-bearing phrase per paragraph. Here it's a warm amber ember against the dark.</div>
+      <div class="callout warn"><strong>Scope note</strong> Prototype. Keeps dark mode but swaps the teal/Inter system for a serif + violet nocturne. Same 19 components, different mood.</div>
+      <div class="callout danger"><strong>Breaking change</strong> Schema migration requires a read-only window of ~2 minutes. Rollback is not automated.</div>
+      <div class="stat-grid">
+        <div class="stat"><div class="n">19</div><div class="l">Components</div></div>
+        <div class="stat"><div class="n">2</div><div class="l">Font families</div></div>
+        <div class="stat"><div class="n">1</div><div class="l">Export</div></div>
+        <div class="stat"><div class="n">1</div><div class="l">Glow color</div></div>
+      </div>
+      <div class="demo-area">
+        <span class="demo-label">Live demo</span>
+        <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.6rem">
+          <span class="badge added"><span class="bd"></span>added</span>
+          <span class="badge removed"><span class="bd"></span>removed</span>
+          <span class="badge modified"><span class="bd"></span>modified</span>
+          <span class="badge pending"><span class="bd"></span>pending</span>
+          <span class="badge draft"><span class="bd"></span>draft</span>
+          <span class="badge breaking"><span class="bd"></span>breaking</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="colors">
+      <h2><span class="idx">01</span> Color Tokens</h2>
+      <div class="callout"><strong>Use these names exactly.</strong> Token names are the implementation standard. Inventing aliases or one-off hex values breaks consistency across documents.</div>
+      <h4>Surface</h4>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="c" style="background:#08090c"></div><div class="i"><span class="nm">--bg</span><span class="vl">#08090c · page</span></div></div>
+        <div class="swatch"><div class="c" style="background:#0d0f13"></div><div class="i"><span class="nm">--bg2</span><span class="vl">#0d0f13 · panels</span></div></div>
+        <div class="swatch"><div class="c" style="background:#121419"></div><div class="i"><span class="nm">--bg3</span><span class="vl">#121419 · code head</span></div></div>
+      </div>
+      <h4>Ink</h4>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="c" style="background:#f4f1ea"></div><div class="i"><span class="nm">--fg</span><span class="vl">#f4f1ea · headings</span></div></div>
+        <div class="swatch"><div class="c" style="background:#a7a39b"></div><div class="i"><span class="nm">--fg2</span><span class="vl">#a7a39b · prose</span></div></div>
+        <div class="swatch"><div class="c" style="background:#6b6760"></div><div class="i"><span class="nm">--fg3</span><span class="vl">#6b6760 · meta</span></div></div>
+      </div>
+      <h4>Glow & semantic</h4>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="c" style="background:#c8b6ff"></div><div class="i"><span class="nm">--glow</span><span class="vl">#c8b6ff · accent</span></div></div>
+        <div class="swatch"><div class="c" style="background:#9ae6b4"></div><div class="i"><span class="nm">--green</span><span class="vl">#9ae6b4 · add</span></div></div>
+        <div class="swatch"><div class="c" style="background:#ff9aa8"></div><div class="i"><span class="nm">--red</span><span class="vl">#ff9aa8 · del</span></div></div>
+        <div class="swatch"><div class="c" style="background:#a5c8ff"></div><div class="i"><span class="nm">--blue</span><span class="vl">#a5c8ff · info</span></div></div>
+        <div class="swatch"><div class="c" style="background:#ffd9a0"></div><div class="i"><span class="nm">--amber</span><span class="vl">#ffd9a0 · hl/warn</span></div></div>
+      </div>
+    </section>
+
+    <section id="type">
+      <h2><span class="idx">02</span> Typography</h2>
+      <p>Two faces. <code>Fraunces</code> — a soft serif with optical sizing — carries prose and display. <code>JetBrains Mono</code> handles everything structural. The serif keeps long technical prose from feeling like a terminal.</p>
+      <div class="type-row"><div class="type-meta">Headline<span class="type-spec">Fraunces 500 / 1.6rem</span></div><span style="font-family:var(--serif);font-size:1.5rem;font-weight:500">Migration Plan</span></div>
+      <div class="type-row"><div class="type-meta">Body<span class="type-spec">Fraunces 400 / .98rem</span></div><span style="font-size:.98rem;color:var(--fg2)">The migration needs a read-only window of ~2 minutes during the schema transition.</span></div>
+      <div class="type-row"><div class="type-meta">Code / mono<span class="type-spec">JetBrains 400 / .8rem</span></div><code>src/agent/config.py</code></div>
+      <div class="type-row" style="border:none"><div class="type-meta">Shortcut<span class="type-spec">JetBrains</span></div><kbd>⌘K</kbd> + <kbd>Shift</kbd> <kbd>P</kbd></div>
+    </section>
+
+    <section id="spacing">
+      <h2><span class="idx">03</span> Spacing</h2>
+      <div class="space-row"><span class="space-meta">8px · .5rem</span><div class="space-bar" style="width:8px"></div><span style="font-size:.66rem;color:var(--fg3);font-family:var(--mono)">badge / button</span></div>
+      <div class="space-row"><span class="space-meta">16px · 1rem</span><div class="space-bar" style="width:16px"></div><span style="font-size:.66rem;color:var(--fg3);font-family:var(--mono)">card padding</span></div>
+      <div class="space-row"><span class="space-meta">24px · 1.5rem</span><div class="space-bar" style="width:24px"></div><span style="font-size:.66rem;color:var(--fg3);font-family:var(--mono)">section gap</span></div>
+      <div class="space-row"><span class="space-meta">48px · 3rem</span><div class="space-bar" style="width:48px"></div><span style="font-size:.66rem;color:var(--fg3);font-family:var(--mono)">page pad</span></div>
+    </section>
+
+    <section id="layout">
+      <h2><span class="idx">04</span> Layout</h2>
+      <p>A persistent left-rail index, not a top nav — so section status stays visible at all times and the reading column is never interrupted. Single centered content column with generous margin. Below: the shell as a diagram.</p>
+      <div class="diagram-wrap">
+        <svg class="diagram-svg" viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+          <defs><style>.m{font-family:'JetBrains Mono',monospace;font-size:11px;fill:var(--fg2)}.g{font-family:'JetBrains Mono',monospace;font-size:11px;fill:var(--glow)}</style></defs>
+           <rect x="8" y="8" width="624" height="204" rx="10" fill="none" style="stroke:var(--svg-stroke)"/>
+           <rect x="8" y="8" width="190" height="204" rx="10" style="fill:var(--bg2);stroke:var(--svg-stroke)"/>
+          <text x="28" y="36" class="g" font-weight="500">html-presentation</text>
+          <text x="28" y="54" class="m" font-size="9">NOCTURNE · REDRAFT</text>
+           <line x1="28" y1="66" x2="172" y2="66" style="stroke:var(--svg-stroke)"/>
+          <text x="28" y="86" class="m" font-size="9">00 overview</text>
+          <text x="28" y="102" class="m" font-size="9">01 colors</text>
+          <text x="28" y="118" class="m" font-size="9">02 type</text>
+          <text x="28" y="134" class="m" font-size="9">03 spacing</text>
+          <text x="28" y="150" class="m" font-size="9">04 layout</text>
+          <text x="28" y="166" class="m" font-size="9">05 code</text>
+          <text x="28" y="182" class="m" font-size="9">06 diffs</text>
+          <text x="28" y="198" class="m" font-size="9">07 cards</text>
+           <rect x="214" y="24" width="404" height="40" rx="8" style="fill:var(--bg2);stroke:var(--svg-stroke)"/>
+          <text x="234" y="49" class="m" font-size="10">max-width 1140px · rail + content</text>
+          <rect x="214" y="76" width="404" height="1" style="fill:var(--svg-stroke)"/>
+          <rect x="234" y="88" width="370" height="8" rx="4" style="fill:var(--bg3)"/>
+          <rect x="234" y="104" width="388" height="8" rx="4" style="fill:var(--bg3)"/>
+          <rect x="234" y="120" width="340" height="8" rx="4" style="fill:var(--bg3)"/>
+           <rect x="234" y="140" width="404" height="40" rx="8" style="fill:var(--bg2);stroke:var(--svg-stroke)"/>
+          <rect x="214" y="192" width="404" height="1" style="fill:var(--svg-stroke)"/>
+          <text x="234" y="208" class="m" font-size="9">footer · one export</text>
+          <rect x="510" y="184" width="96" height="16" rx="8" style="fill:var(--glow);fill-opacity:.12;stroke:var(--glow);stroke-opacity:.3"/>
+          <text x="558" y="195" text-anchor="middle" class="g" font-size="9">copy md</text>
+        </svg>
+      </div>
+    </section>
+
+    <section id="code">
+      <h2><span class="idx">05</span> Code Blocks</h2>
+      <p>Always line-numbered. Header shows language and a local copy control. Muted line numbers; the glow color marks function names. Scrolls horizontally, never wraps.</p>
+      <div class="code-block">
+        <div class="code-head"><span class="code-lang">python</span><button class="cb-copy" onclick="copy(this)">copy</button></div>
+        <div class="code-body">
+          <div class="cl"><span class="ln" aria-hidden="true">1</span><span class="lc"><span class="kw">from</span> pathlib <span class="kw">import</span> Path</span></div>
+          <div class="cl"><span class="ln" aria-hidden="true">2</span><span class="lc"><span class="kw">from</span> typing  <span class="kw">import</span> Optional</span></div>
+          <div class="cl"><span class="ln" aria-hidden="true">3</span><span class="lc"></span></div>
+          <div class="cl"><span class="ln" aria-hidden="true">4</span><span class="lc"><span class="cmt"># Load configuration from environment</span></span></div>
+          <div class="cl"><span class="ln" aria-hidden="true">5</span><span class="lc"><span class="kw">def</span> <span class="fn">load_config</span>(env_path: Path) <span class="op">-></span> Optional[dict]:</span></div>
+          <div class="cl"><span class="ln" aria-hidden="true">6</span><span class="lc">    <span class="kw">if not</span> env_path.exists():</span></div>
+          <div class="cl"><span class="ln" aria-hidden="true">7</span><span class="lc">        <span class="kw">raise</span> FileNotFoundError(<span class="str">f"No env at {env_path}"</span>)</span></div>
+          <div class="cl"><span class="ln" aria-hidden="true">8</span><span class="lc">    <span class="kw">return</span> {k: v <span class="kw">for</span> k, v <span class="kw">in</span> __import__(<span class="str">'os'</span>).environ.items()}</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="diffs">
+      <h2><span class="idx">06</span> Diff Blocks</h2>
+      <p>The primary component for codebase visualization. Dual line numbers, <code>+</code>/<code>−</code> gutter, blue hunk header. Green adds, red deletes — both at low opacity so the page stays calm.</p>
+      <div class="diff-block">
+        <div class="diff-head"><span class="diff-name">src/agent/config.py</span><div class="diff-stats"><span class="ds-a">+9</span><span class="ds-d">−3</span></div></div>
+        <div class="diff-hunk" aria-hidden="true">@@ -14,7 +14,13 @@ class AgentConfig:</div>
+        <div class="dl ctx"><div class="dl-nums" aria-hidden="true"><span class="dl-num">14</span><span class="dl-num">14</span></div><span class="dl-gut" aria-hidden="true"> </span><span class="dl-content">    model: str = "zai/glm-4.7"</span></div>
+        <div class="dl ctx"><div class="dl-nums" aria-hidden="true"><span class="dl-num">15</span><span class="dl-num">15</span></div><span class="dl-gut" aria-hidden="true"> </span><span class="dl-content">    max_tokens: int = 4096</span></div>
+        <div class="dl del"><div class="dl-nums" aria-hidden="true"><span class="dl-num">16</span><span class="dl-num"></span></div><span class="dl-gut" aria-hidden="true">−</span><span class="dl-content">    timeout: int = 30</span></div>
+        <div class="dl del"><div class="dl-nums" aria-hidden="true"><span class="dl-num">17</span><span class="dl-num"></span></div><span class="dl-gut" aria-hidden="true">−</span><span class="dl-content">    retry_on_failure: bool = False</span></div>
+        <div class="dl add"><div class="dl-nums" aria-hidden="true"><span class="dl-num"></span><span class="dl-num">16</span></div><span class="dl-gut" aria-hidden="true">+</span><span class="dl-content">    timeout: int = <span class="di-add">60</span></span></div>
+        <div class="dl add"><div class="dl-nums" aria-hidden="true"><span class="dl-num"></span><span class="dl-num">17</span></div><span class="dl-gut" aria-hidden="true">+</span><span class="dl-content">    retry_on_failure: bool = <span class="di-add">True</span></span></div>
+        <div class="dl add"><div class="dl-nums" aria-hidden="true"><span class="dl-num"></span><span class="dl-num">18</span></div><span class="dl-gut" aria-hidden="true">+</span><span class="dl-content">    retry_limit: int = 3</span></div>
+        <div class="dl add"><div class="dl-nums" aria-hidden="true"><span class="dl-num"></span><span class="dl-num">19</span></div><span class="dl-gut" aria-hidden="true">+</span><span class="dl-content">    backoff_factor: float = 1.5</span></div>
+        <div class="dl ctx"><div class="dl-nums" aria-hidden="true"><span class="dl-num">18</span><span class="dl-num">20</span></div><span class="dl-gut" aria-hidden="true"> </span><span class="dl-content">    temperature: float = 0.7</span></div>
+        <div class="diff-hunk" aria-hidden="true">@@ -30,8 +30,10 @@ class Runner:</div>
+        <div class="dl ctx"><div class="dl-nums" aria-hidden="true"><span class="dl-num">30</span><span class="dl-num">30</span></div><span class="dl-gut" aria-hidden="true"> </span><span class="dl-content">    def run(self):</span></div>
+        <div class="dl ctx"><div class="dl-nums" aria-hidden="true"><span class="dl-num">31</span><span class="dl-num">31</span></div><span class="dl-gut" aria-hidden="true"> </span><span class="dl-content">        self.setup()</span></div>
+        <div class="dl del"><div class="dl-nums" aria-hidden="true"><span class="dl-num">32</span><span class="dl-num"></span></div><span class="dl-gut" aria-hidden="true">−</span><span class="dl-content">        self.start()</span></div>
+        <div class="dl add"><div class="dl-nums" aria-hidden="true"><span class="dl-num"></span><span class="dl-num">32</span></div><span class="dl-gut" aria-hidden="true">+</span><span class="dl-content">        await self.start()</span></div>
+        <div class="dl ctx"><div class="dl-nums" aria-hidden="true"><span class="dl-num">33</span><span class="dl-num">33</span></div><span class="dl-gut" aria-hidden="true"> </span><span class="dl-content">        self.cleanup()</span></div>
+      </div>
+      <h4>File tree — change scope</h4>
+      <div class="file-tree">
+        <div class="ft-row dir"><span>▸</span><span class="ft-n">src/agent/</span></div>
+        <div class="ft-row mod" style="padding-left:1.25rem"><span>📄</span><span class="ft-n">config.py</span><span class="ft-badge mod">mod</span></div>
+        <div class="ft-row add" style="padding-left:1.25rem"><span>📄</span><span class="ft-n">retry.py</span><span class="ft-badge add">add</span></div>
+        <div class="ft-row ctx" style="padding-left:1.25rem"><span>📄</span><span class="ft-n">loop.py</span></div>
+        <div class="ft-row del" style="padding-left:1.25rem"><span>📄</span><span class="ft-n">legacy_runner.py</span><span class="ft-badge del">del</span></div>
+      </div>
+    </section>
+
+    <section id="cards">
+      <h2><span class="idx">07</span> Entity Cards</h2>
+      <p>Container for a named thing being analyzed. <code>.active</code> adds a thin glow left border for the current focus entity.</p>
+      <div class="entity-card active">
+        <h3>📂 agent/ <span class="tag done">done</span></h3>
+        <div class="ec-path">~/prog/zeroclaw/src/agent/</div>
+        <div class="callout"><strong>Current migration target.</strong> Config changes deploy before the agent update. Verify checksums after rsync.</div>
+        <h4>Files</h4>
+        <ul class="file-list">
+          <li><span>📄</span><code>config.py</code> <span class="tag deliverable">deliverable</span></li>
+          <li><span>📄</span><code>retry.py</code> <span class="tag deliverable">deliverable</span></li>
+          <li><span>📄</span><code>legacy_runner.py</code> <span class="tag remove">remove</span></li>
+        </ul>
+        <h4 style="margin-top:.8rem">Tag variants</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem">
+          <span class="tag deliverable">deliverable</span>
+          <span class="tag temp">temp</span>
+          <span class="tag debate">debate</span>
+          <span class="tag remove">remove</span>
+          <span class="tag done">done</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="decisions">
+      <h2><span class="idx">08</span> Decisions</h2>
+      <p>Numbered option headers for N-way comparisons. Genuine trade-offs use the <code>+</code>/<code>−</code> analysis grid. Concluded judgment uses the glow-bordered recommendation block.</p>
+      <div class="option-header"><span class="option-num">01</span><span class="option-title">Horizontal hide-on-scroll nav</span></div>
+      <p>Nav hides on scroll-down, reveals on scroll-up. Frees vertical space on mobile.</p>
+      <div class="option-header"><span class="option-num">02</span><span class="option-title">Persistent sidebar nav</span></div>
+      <p>Adds structural complexity but keeps section status visible always.</p>
+      <div class="analysis">
+        <div class="analysis-col pros"><h4>Pros · horizontal</h4><ul><li>Lower complexity, single column</li><li>Hide-on-scroll gives nav room</li></ul></div>
+        <div class="analysis-col cons"><h4>Cons · horizontal</h4><ul><li>Links vanish while reading</li><li>Cramped with many sections</li></ul></div>
+      </div>
+      <div class="recommendation"><h3>Recommendation</h3><p>Exhaust the horizontal hide-on-scroll nav first. Promote to a sidebar only when link count or persistent status demands it.</p></div>
+    </section>
+
+    <section id="tables">
+      <h2><span class="idx">09</span> Tables</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">--bg</td><td class="mono">#08090c</td><td>Page body</td></tr>
+          <tr><td class="mono">--glow</td><td class="mono">#c8b6ff</td><td>Accent, links</td></tr>
+          <tr><td class="mono">--green</td><td class="mono">#9ae6b4</td><td>Additions, success</td></tr>
+          <tr><td class="mono">--red</td><td class="mono">#ff9aa8</td><td>Deletions, errors</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="plan">
+      <h2><span class="idx">10</span> Plan</h2>
+      <div class="plan">
+        <div class="plan-step done-step"><div class="plan-ind"><div class="plan-dot done">✓</div><div class="plan-line"></div></div><div class="plan-body"><div class="plan-title">Lock token system</div><div class="plan-desc">Names and hierarchy fixed. No per-doc aliases.</div></div></div>
+        <div class="plan-step done-step"><div class="plan-ind"><div class="plan-dot done">✓</div><div class="plan-line"></div></div><div class="plan-body"><div class="plan-title">Style guide as implementation</div><div class="plan-desc">Every component shown is copy-as-is.</div></div></div>
+        <div class="plan-step done-step"><div class="plan-ind"><div class="plan-dot done">✓</div><div class="plan-line"></div></div><div class="plan-body"><div class="plan-title">Add .hl highlight</div><div class="plan-desc">Amber inline emphasis, distinct from warnings.</div></div></div>
+        <div class="plan-step"><div class="plan-ind"><div class="plan-dot">4</div></div><div class="plan-body"><div class="plan-title">Deploy to four targets</div><div class="plan-desc">Byte-identical across harnesses.</div></div></div>
+      </div>
+    </section>
+
+    <section id="rules">
+      <h2><span class="idx">11</span> Writing Rules</h2>
+      <ul class="rule-list">
+        <li><span class="tag done">done</span> 01 Section titles are nouns. Action goes in prose.</li>
+        <li><span class="tag done">done</span> 02 Nav title format: <code>scope / document-type</code>.</li>
+        <li><span class="tag done">done</span> 03 Callouts annotate; recommendations conclude.</li>
+        <li><span class="tag done">done</span> 04 One export: <strong>copy markdown</strong> in the footer.</li>
+        <li><span class="tag done">done</span> 05 <span class="hl">Highlight sparingly</span> — one load-bearing phrase per paragraph.</li>
+        <li><span class="tag done">done</span> 06 No hero language <em>below</em> the h1 — one poetic line up top, everything under it is a developer doc.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <span>html-presentation / style-guide · NOCTURNE · hy3-free</span>
+  <button class="export-btn" onclick="copyMd(this)">copy markdown</button>
+</footer>
+
+<script>
+// ── Nav active state (IntersectionObserver) ───────────────────
+const railLinks=[...document.querySelectorAll('.rail nav a')];
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const id=e.target.id;railLinks.forEach(a=>{const match=a.getAttribute('href')==='#'+id;a.classList.toggle('active',match);if(match)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current')})}})},{rootMargin:'-40% 0px -55% 0px'});
+document.querySelectorAll('main section').forEach(s=>obs.observe(s));
+
+// ── Clipboard helpers ──────────────────────────────────────────
+function flash(btn, label = 'copied') {
+  const orig = btn.dataset.label || btn.textContent;
+  clearTimeout(btn._t);
+  btn.textContent = label;
+  btn._t = setTimeout(() => { btn.textContent = orig; }, 1500);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch {
+    const ta = Object.assign(document.createElement('textarea'), {
+      value: text, readOnly: true, style: 'position:fixed;top:-9999px'
+    });
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  }
+}
+
+// ── Per-block copy with fallback ──────────────────────────────
+async function copy(btn) {
+  const block = btn.closest('.code-block');
+  if (!block) { flash(btn, 'no block'); return; }
+  const lines = [...block.querySelectorAll('.lc')];
+  const text = lines.map(el => el.textContent).join('\n');
+  const ok = await copyText(text);
+  flash(btn, ok ? 'copied' : 'copy failed');
+}
+
+// ── copyMarkdown — recursive walker ────────────────────────────
+async function copyMd(btn) {
+  const main = document.querySelector('main') || document.body;
+  const skipTags = new Set(['SCRIPT', 'STYLE']);
+  const blocks = [];
+  let listGroup = [];
+  const flushList = () => { if (listGroup.length) { blocks.push(listGroup.join('\n')); listGroup = []; } };
+  const push = (t) => { if (t && t.trim()) blocks.push(t.trim()); };
+
+  // Serialize inline elements: code/kbd → backticks, strong/.hl → **, em → *
+  // `exclude` skips child tags (used for list items that hold nested lists).
+  function inlineText(el, exclude = new Set()) {
+    const t = el.tagName;
+    const c = el.className || '';
+    const inner = () => {
+      let result = '';
+      for (const node of el.childNodes) {
+        if (node.nodeType === 3) { result += node.textContent; continue; }
+        if (node.nodeType !== 1) continue;
+        const cc = node.className || '';
+        if (cc.includes('idx') || cc.includes('tag') || cc.includes('ft-badge') || cc.includes('bd')) continue;
+        const nt = node.tagName;
+        if (exclude.has(nt)) continue;
+        result += inlineText(node, exclude);
+      }
+      return result.trim();
+    };
+    if (t === 'CODE' || t === 'KBD') return '`' + el.textContent.trim() + '`';
+    if (t === 'STRONG') return '**' + inner() + '**';
+    if (t === 'EM') return '*' + inner() + '*';
+    if (t === 'SPAN' && c.includes('hl')) return '**' + inner() + '**';
+    return inner();
+  }
+
+  // Serialize an element's children, skipping one specific node (e.g. a meta cell).
+  function inlineTextExcept(el, skipEl) {
+    let result = '';
+    for (const node of el.childNodes) {
+      if (node === skipEl) continue;
+      if (node.nodeType === 3) { result += node.textContent; continue; }
+      if (node.nodeType !== 1) continue;
+      result += inlineText(node);
+    }
+    return result.trim();
+  }
+
+  // Nested-list serialization: 2-space indent per depth, inline markers kept.
+  function listBlock(ul, ordered, depth) {
+    const lines = [];
+    [...ul.children].forEach((li, i) => {
+      const marker = ordered ? (i + 1) + '. ' : '- ';
+      lines.push('  '.repeat(depth) + marker + inlineText(li, new Set(['UL', 'OL'])));
+      for (const child of li.children) {
+        if (child.tagName === 'UL' || child.tagName === 'OL') {
+          lines.push(...listBlock(child, child.tagName === 'OL', depth + 1));
+        }
+      }
+    });
+    return lines;
+  }
+
+  // Callout → blockquote. Label is the first direct strong; the body keeps
+  // inline markers and block children on their own `> ` lines.
+  function calloutBlock(el) {
+    const strong = [...el.children].find(ch => ch.tagName === 'STRONG');
+    const label = strong ? strong.textContent.trim() : '';
+    const body = [];
+    let cur = '';
+    const flush = () => { if (cur.trim()) { body.push(cur.trim()); cur = ''; } };
+    for (const node of el.childNodes) {
+      if (node === strong) continue;
+      if (node.nodeType === 3) { cur += node.textContent; continue; }
+      if (node.nodeType !== 1) continue;
+      const t = node.tagName;
+      if (t === 'P' || t === 'UL' || t === 'OL' || t === 'DIV') {
+        flush();
+        if (t === 'UL' || t === 'OL') body.push(...listBlock(node, t === 'OL', 0));
+        else body.push(inlineText(node));
+      } else {
+        cur += inlineText(node);
+      }
+    }
+    flush();
+    const lines = body.flatMap(b => b.split('\n'));
+    const lead = label ? '> **' + label + '**' : '>';
+    return lines.map((l, i) => i === 0 ? lead + (l ? ' ' + l : '') : '> ' + l).join('\n');
+  }
+
+  function walk(parent) {
+    for (const node of parent.childNodes) {
+      if (node.nodeType === 3) { // TEXT_NODE — bare block text
+        const txt = node.textContent.trim();
+        if (txt) push(txt);
+        continue;
+      }
+      const el = node;
+      if (el.nodeType !== 1) continue;
+      const tag = el.tagName;
+      const cls = el.className || '';
+      if (skipTags.has(tag)) continue;
+      if (el.namespaceURI && el.namespaceURI !== 'http://www.w3.org/1999/xhtml') continue; // skip SVG etc
+      // Skip decorative / noisy blocks
+      if (cls.includes('diagram-wrap') || cls.includes('demo-area') ||
+          cls.includes('plan-ind') || cls.includes('eyebrow') ||
+          cls.includes('demo-label')) continue;
+      if (el.hasAttribute('data-export-skip')) continue;
+      if (tag === 'SECTION') { flushList(); walk(el); continue; }
+      // Standalone inline elements — skip decorative chrome, keep code/kbd
+      if (tag === 'SPAN' || tag === 'KBD' || tag === 'CODE') {
+        if (cls.includes('tag') || cls.includes('badge') || cls.includes('ft-badge') || cls.includes('idx')) continue;
+        if (tag === 'SPAN') continue;
+        const txt = '`' + el.textContent.trim() + '`';
+        push(txt);
+        continue;
+      }
+      // Headings — ATX, strip section numbers and tag badges
+      if (tag === 'H1' || tag === 'H2' || tag === 'H3' || tag === 'H4') {
+        flushList();
+        const text = inlineText(el).replace(/^\d{1,3}(?:\.\s+|\s+[–—\-]\s+|\s+)/, '');
+        if (text) push('#'.repeat(+tag[1]) + ' ' + text);
+        continue;
+      }
+      // Callout → blockquote
+      if (cls.includes('callout')) { flushList(); push(calloutBlock(el)); continue; }
+      // Code block → fenced block
+      if (cls.includes('code-block')) {
+        flushList();
+        const langEl = el.querySelector('.code-lang');
+        const lang = langEl ? langEl.textContent.trim() : '';
+        const lines = [...el.querySelectorAll('.lc')].map(lc => lc.textContent);
+        push('```' + lang + '\n' + lines.join('\n') + '\n```');
+        continue;
+      }
+      // Diff block — interleaved document order (multi-hunk safe)
+      if (cls.includes('diff-block')) {
+        flushList();
+        const parts = [];
+        for (const child of el.childNodes) {
+          if (child.nodeType !== 1) continue;
+          const childClass = child.className || '';
+          if (childClass.includes('diff-hunk')) parts.push(child.textContent.trim());
+          else if (childClass.includes('dl')) {
+            const content = child.querySelector('.dl-content');
+            const prefix = child.classList.contains('add') ? '+' : child.classList.contains('del') ? '-' : ' ';
+            parts.push(prefix + (content ? content.textContent : ''));
+          }
+        }
+        push('```diff\n' + parts.join('\n') + '\n```');
+        continue;
+      }
+      // File tree — one line per row (filename only, no badge/icon noise)
+      if (cls.includes('file-tree')) {
+        flushList();
+        const rows = [...el.querySelectorAll('.ft-row')]
+          .map(row => row.querySelector('.ft-n'))
+          .filter(Boolean)
+          .map(n => n.textContent.trim());
+        if (rows.length) push(rows.join('\n'));
+        continue;
+      }
+      // Stat grid — bullet list of number + label
+      if (cls.includes('stat-grid')) {
+        flushList();
+        const items = [...el.querySelectorAll('.stat')].map(s => {
+          const n = s.querySelector('.n')?.textContent.trim() || '';
+          const l = s.querySelector('.l')?.textContent.trim() || '';
+          return '- **' + n + '** ' + l;
+        });
+        if (items.length) push(items.join('\n'));
+        continue;
+      }
+      // Swatch grid — bullet list of token name + value (color chips are visual)
+      if (cls.includes('swatch-grid')) {
+        flushList();
+        const items = [...el.querySelectorAll('.swatch')].map(s => {
+          const nm = s.querySelector('.nm')?.textContent.trim() || '';
+          const vl = s.querySelector('.vl')?.textContent.trim() || '';
+          return '- **' + nm + '** ' + vl;
+        });
+        if (items.length) push(items.join('\n'));
+        continue;
+      }
+      // Plan — ordered list per step (title — description)
+      if (cls.includes('plan')) {
+        flushList();
+        const items = [...el.querySelectorAll('.plan-step')].map((s, i) => {
+          const title = s.querySelector('.plan-title')?.textContent.trim() || '';
+          const desc = s.querySelector('.plan-desc')?.textContent.trim() || '';
+          return (i + 1) + '. ' + (title ? '**' + title + '**' : '') + (desc ? (title ? ' — ' : '') + desc : '');
+        });
+        if (items.length) push(items.join('\n'));
+        continue;
+      }
+      // Option header — numbered h4
+      if (cls.includes('option-header')) {
+        flushList();
+        const num = el.querySelector('.option-num')?.textContent.trim() || '';
+        const title = el.querySelector('.option-title')?.textContent.trim() || '';
+        const line = [num, title].filter(Boolean).join(' — ');
+        if (line) push('#### ' + line);
+        continue;
+      }
+      // Type / space rows — list items grouped with their siblings
+      if (cls.includes('type-row') || cls.includes('space-row')) {
+        const isType = cls.includes('type-row');
+        const meta = el.querySelector(isType ? '.type-meta' : '.space-meta');
+        let name = '';
+        if (meta) {
+          const mc = meta.cloneNode(true);
+          if (isType) mc.querySelector('.type-spec')?.remove();
+          name = mc.textContent.trim();
+        }
+        const spec = isType ? (meta && meta.querySelector('.type-spec')?.textContent.trim()) || '' : '';
+        const example = inlineTextExcept(el, meta) || '';
+        listGroup.push(isType
+          ? '- **' + name + '**' + (spec ? ' (' + spec + ')' : '') + (example ? ': ' + example : '')
+          : '- **' + name + '**' + (example ? ' — ' + example : ''));
+        continue;
+      }
+      // Table → GFM with separator
+      if (tag === 'TABLE') {
+        flushList();
+        const rows = [...el.querySelectorAll('tr')];
+        if (!rows.length) continue;
+        const ncols = Math.max(...rows.map(r => r.querySelectorAll('th,td').length));
+        const fmt = (r) => '| ' + r.concat(Array(Math.max(0, ncols - r.length)).fill('')).join(' | ') + ' |';
+        const grid = [fmt([...rows[0].querySelectorAll('th,td')].map(td => inlineText(td)))];
+        grid.push(fmt(Array(ncols).fill('---')));
+        for (let i = 1; i < rows.length; i++) {
+          grid.push(fmt([...rows[i].querySelectorAll('th,td')].map(td => inlineText(td))));
+        }
+        push(grid.join('\n'));
+        continue;
+      }
+      // List blocks (nested-aware)
+      if (tag === 'UL' || tag === 'OL') {
+        flushList();
+        const lines = listBlock(el, tag === 'OL', 0);
+        if (lines.length) push(lines.join('\n'));
+        continue;
+      }
+      // DIV — recurse
+      if (tag === 'DIV') { flushList(); walk(el); continue; }
+      // Default: extract text with inline markers (paragraphs etc.)
+      flushList();
+      push(inlineText(el));
+    }
+  }
+  walk(main);
+  flushList();
+  const md = blocks.join('\n\n').trim();
+  const ok = await copyText(md ? md + '\n' : '');
+  flash(btn, ok ? 'copied' : 'copy failed');
+}
+</script>
+</body>
+</html>
