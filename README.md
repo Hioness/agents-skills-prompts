@@ -120,6 +120,40 @@ Notes:
 
 - Copying overwrites any existing `opencode.json`. Back it up first if you have a personal config. The `default_agent` and `agent` settings assume the agent files are present. Adjust them if you copy only part of the config.
 
+#### OpenCode permissions
+
+OpenCode asks for approval when a tool touches a path outside the project working directory. Global skills in `~/.agents/skills/` are outside every project directory, so the agent can load a skill but gets a permission prompt when it reads or runs the skill's support files (templates, scripts, images). Add a `permission` block to the global config to allow the skill folders:
+
+```jsonc
+{
+  "permission": {
+    "external_directory": {
+      "~/.agents/**": "allow",
+      "<path-to-this-repo>/skills/**": "allow"
+    }
+  }
+}
+```
+
+Replace `<path-to-this-repo>` with the real clone path, for example `~/Projects/agents-skills-prompts`.
+
+The entries in `~/.agents/skills/` are symlinks. OpenCode matches permission rules against the real target path of a symlink, not the symlink path. A rule for `~/.agents/**` alone does not cover symlinked skills. Add one rule per real location that your skills come from.
+
+The rule set grants the same read and edit rights as the working directory. Add `edit` deny rules if you do not want agents to change skill files:
+
+```jsonc
+{
+  "permission": {
+    "edit": {
+      "~/.agents/**": "deny",
+      "<path-to-this-repo>/skills/**": "deny"
+    }
+  }
+}
+```
+
+`opencode --auto` is a blunt alternative: it auto-approves every permission request instead.
+
 ## Installing with an agent
 
 Paste this into your agent to install the repo:
@@ -129,6 +163,7 @@ Paste this into your agent to install the repo:
 > 1. **Skills:** for each skill in `skills/`, symlink the directory into `~/.agents/skills/` for a global install, or `.agents/skills/` for a project install. The harnesses opencode, omp, pi, muse code, deepseek dsh, and codex read skills from these folders. Install the ones you want.
 > 2. **OpenCode config:** back up any existing `~/.config/opencode/opencode.json`, then copy `opencode/opencode.json` and `opencode/working-dir.md` into `~/.config/opencode/`, and `opencode/agents/*.md` into `~/.config/opencode/agent/` (create the `agent/` directory if needed).
 > 3. **Paths:** the `instructions` in `opencode.json` reference `~/.config/opencode/working-dir.md` and `~/.agents/skills/ste-writing/ste-always-on.md`. Make sure both files exist: the working-dir copy from step 2 and the `ste-writing` skill symlink from step 1.
+> 4. **OpenCode permissions:** opencode asks for approval when a tool touches a path outside the project working directory. Add a `permission` block to `~/.config/opencode/opencode.json` with `external_directory` allow rules for `~/.agents/**` and `<path-to-this-repo>/skills/**` (the real clone path). The rules must name the real target paths of the symlinks, not the symlinks themselves. See "OpenCode permissions" in the README for the exact block and the optional `edit` deny rules.
 
 Claude does not read `.agents/`. It reads `.claude/skills/` and `~/.claude/skills/`, and its memory file is `CLAUDE.md` instead of `AGENTS.md`. Symlink the skills into `~/.claude/skills/` if you use Claude.
 
