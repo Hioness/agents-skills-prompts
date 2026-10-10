@@ -144,7 +144,7 @@ Notes:
 - `opencode.json` makes `minimal` the default and disables the built-in `build` and `plan` agents. Switch to `orchestrator` in the TUI when you want delegated work.
 - `opencode.json` also allows reads under `~/.agents/**`. Global skills and the model policy file then load without a permission prompt.
 - The `instructions` paths point at `~/.config/opencode/working-dir.md` (work only inside the working directory) and `~/.agents/skills/ste-writing/ste-always-on.md` (use STE in prose). Both files ship with this repo. `working-dir.md` is in `opencode/`, and the STE file ships with the `ste-writing` skill. Edit the paths if your files live elsewhere.
-- The `model-policy` symlink lets the orchestrator build the policy on demand. Without it, the orchestrator tells you to build the policy by hand.
+- The `model-policy` symlink lets the orchestrator build the policy on demand. Run the `model-policy` skill once after setup. It asks your priorities and writes the file. Without the symlink, the orchestrator tells you to build the policy by hand.
 - The config carries no plugins and no MCP servers. Add your own.
 - Copying overwrites any existing `opencode.json`. Back it up first if you have a personal config. The `default_agent` and `agents` settings assume the agent files are present. Adjust them if you copy only part of the config.
 
@@ -188,6 +188,7 @@ Paste this into your agent to install the repo:
 > 2. **OpenCode config:** back up any existing `~/.config/opencode/opencode.json`, then copy `opencode/opencode.json` and `opencode/working-dir.md` into `~/.config/opencode/`, and `opencode/agents/*.md` into `~/.config/opencode/agent/` (create the `agent/` directory if needed). Remove the old `architect.md`, `super-karp.md`, `plan-karp.md`, and `loop.md` files if they are present.
 > 3. **Paths:** the `instructions` in `opencode.json` reference `~/.config/opencode/working-dir.md` and `~/.agents/skills/ste-writing/ste-always-on.md`. Make sure both files exist: the working-dir copy from step 2 and the `ste-writing` skill symlink from step 1.
 > 4. **OpenCode permissions:** opencode asks for approval when a tool touches a path outside the project working directory. Add a `permissions` block to `~/.config/opencode/opencode.json` with `external_directory` allow rules for `~/.agents/**` and `<path-to-this-repo>/skills/**` (the real clone path). The rules must name the real target paths of the symlinks, not the symlinks themselves. See "OpenCode permissions" in the README for the exact block and the optional `edit` deny rules.
+> 5. **Model policy:** load the `model-policy` skill and interview the user. Ask about the budget shape, the hard constraints, the priorities, and the role map for the subagents. Then write `~/.agents/model-policy.md`. Do this even when the user does not ask about models.
 
 Claude does not read `.agents/`. It reads `.claude/skills/` and `~/.claude/skills/`, and its memory file is `CLAUDE.md` instead of `AGENTS.md`. Symlink the skills into `~/.claude/skills/` if you use Claude.
 

@@ -1,6 +1,6 @@
 ---
 name: model-policy
-description: "Build or refresh the model policy that maps a task role to a model and a fallback. Use when the user asks about models, changes a provider, or when the policy file does not exist."
+description: "Build or refresh the model policy for subagent models. Use during OpenCode config setup. Use it also when the user asks about models, when a provider changes, or when the policy file is absent."
 ---
 
 # model-policy
@@ -8,6 +8,13 @@ description: "Build or refresh the model policy that maps a task role to a model
 The model policy is a small file. It maps a task role to a model and a
 fallback. It records what the user wants. It does not hold a frozen list of
 models. The `models` tool holds the live list.
+
+## When to run
+
+Run this skill during OpenCode config setup, before the orchestrator runs.
+Run it even when the user does not ask about models. Run it again when the
+user asks about models, when a provider changes, or when the policy file is
+absent.
 
 The orchestrator reads the file before it picks a model for a subagent. This
 skill builds and refreshes the file. It is OpenCode-specific.
@@ -42,8 +49,9 @@ The file holds two kinds of content:
 ## Setup
 
 Ask for the hard facts first. Then ask for the preferences. Then write the
-file. Use the `question` tool for each step. Give a sensible default, so the
-user can accept it and move on.
+file. Ask each question with the `question` tool. Do not write the file from
+defaults alone, unless the user picks the hands-off path. Give a sensible
+default for each question, so the user can accept it and move on.
 
 1. Find the models. Run `opencode models`. Group the result by provider.
 2. Ask the target. Global `~/.agents/model-policy.md`, or a project
@@ -72,7 +80,8 @@ and the `refreshed` date. Remove a model that no longer appears in
 Some users do not care about models. If the user gives no preference, write a
 short file with one default per role. Pick a strong model for implementation
 and review, a fast one for search and bulk, and a local model for sensitive
-data when one exists. Ask no more than three questions.
+data when one exists. Confirm the defaults in one question, then write the
+file.
 
 ## Rules
 
