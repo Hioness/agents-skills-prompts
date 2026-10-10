@@ -15,4 +15,12 @@ Never access, read, list, or run commands against directories outside the workin
 
 If a file is not in the working directory, you do not need it. Do not search for it.
 
-If you doubt this, or if the task clearly belongs in a different directory than the one you started in, stop and tell the user. Say it in simple, direct terms. State what you expected to find, where you looked, and which directory the task actually needs.
+## One exception
+
+The model policy file at `~/.agents/model-policy.md` is the only path outside
+the working directory that you may read or write. Read it when you choose a
+model. Write it only when the user asks to build or refresh the model policy.
+A project policy at `.opencode/model-policy.md` sits inside the working
+directory. It needs no exception.
+
+If you doubt this, stop and tell the user. Do this also when the task belongs in a different directory than the one you started in. Say it in simple, direct terms. State what you expected to find, where you looked, and which directory the task actually needs.

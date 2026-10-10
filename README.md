@@ -9,9 +9,9 @@ It is not a prescription. Obviously, you get to use these tools however you want
 The `opencode/` folder is specific config for opencode.
 
 - `opencode.json` contains the project config: the default agent, disabled built-in agents, and the extra instructions each agent loads.
-- `agents/` contains the five agent prompts: `architect.md`, `super-karp.md`, `plan-karp.md`, `loop.md`, and `minimal.md`.
+- `agents/` contains the agent prompts: the primaries `minimal.md` and `orchestrator.md`, and the subagent `reviewer.md`.
 
-The [KINGMODE prompt](https://github.com/aicodeking/yt-tutorial/blob/main/gemini-king-mode.md) and [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) inspired the agents' prompts. Those prompts are ARCHITECT, SUPER-KARP, and PLAN-KARP. The LOOP agent also adds insight from several articles on loops and YouTube guides by popular agentic engineers. The default minimal agent prompt is not based on these sources.
+Earlier versions of this repo used prompts inspired by the [KINGMODE prompt](https://github.com/aicodeking/yt-tutorial/blob/main/gemini-king-mode.md) and [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills). Modern models need less prompting, so those prompts are gone. The repo now ships a bare `minimal` agent and an `orchestrator` that delegates. The `orchestrator` reads a model policy that you build with the agent.
 
 These prompts mostly help dumber or older models. Many models in the present day do just as well, or better, with no prompt at all. I would say this is the earliest cutoff point to ignore the prompts and use minimal. This matches the vibes I have seen online. Your results may vary:
 
@@ -26,10 +26,10 @@ These prompts mostly help dumber or older models. Many models in the present day
 
 | Path | What it holds |
 |---|---|
-| `opencode/` | OpenCode-specific config bundle: `opencode.json`, the always-on `working-dir.md`, and the five agent prompts in `agents/` |
+| `opencode/` | OpenCode-specific config bundle: `opencode.json`, the always-on `working-dir.md`, and the agent prompts in `agents/` |
 | `skills/` | Harness-agnostic skills, one directory per skill |
 
-Everything except the `opencode/` folder is harness-agnostic. The one skill tied to a specific harness is `subagent-loops`, marked as OpenCode-specific in the charts below.
+Everything except the `opencode/` folder is harness-agnostic. One skill, `model-policy`, depends on OpenCode, because it reads the OpenCode model list.
 
 ## Skills
 
@@ -51,7 +51,7 @@ Skills live in `skills/<name>/`. Each skill is a directory with a `SKILL.md` fil
 
 | Skill | Purpose |
 |---|---|
-| subagent-loops | Launches and parallelizes loop subagents for autonomous iteration work. OpenCode-specific |
+| model-policy | Builds the file that maps task roles to models and fallbacks. OpenCode-specific |
 | sumi-ink-wash | Japanese sumi ink wash design system with washi paper and vermilion accents |
 | terminal-brutalist | Dark monochrome design system: zero border-radius, 1px hard borders, offset shadows |
 
@@ -64,18 +64,31 @@ Credits:
 
 ## Agent system prompts
 
-The five agent prompts live in `opencode/agents/`. See [Made for OpenCode](#made-for-opencode) above for where they came from.
+The agent prompts live in `opencode/agents/`. See [Made for OpenCode](#made-for-opencode) above for where they came from.
 
 | Agent | Purpose |
 |---|---|
-| architect | Opinionated senior engineer with HTML-first output for anything over 100 lines |
-| super-karp | Behavioral guidelines from the LLM coding pitfalls that Karpathy describes |
-| plan-karp | A write and edit limited version of SUPER-KARP. It prevents the model from touching code when you only want to chat or plan |
-
-| Agent | Purpose |
-|---|---|
-| loop | Autonomous subagent that cycles explore, plan, execute, and review until it reaches the goal |
+| orchestrator | Reads the model policy, splits the work, picks a model per subagent, and verifies the result |
 | minimal | Bare-bones primary agent with no instructions |
+
+| Agent | Purpose |
+|---|---|
+| reviewer | Read-only critic. Runs on a different model than the writer |
+
+You talk to `orchestrator` and `minimal`. The `reviewer` runs behind them. The built-in `explore` and `general` subagents cover search and general work.
+
+## Model policy
+
+The orchestrator picks a model for each subagent. It reads the model policy first. The policy is a small Markdown file that maps a task role to a model and a fallback. It holds your intent, not a fixed list of models.
+
+The orchestrator reads the file in this order:
+
+1. `.opencode/model-policy.md` in the current repo.
+2. `~/.agents/model-policy.md`.
+
+A project file replaces the global file. The two files do not merge.
+
+Build the file with the `model-policy` skill. The skill lists the live models with `opencode models`, asks your priorities and constraints, and writes the file. Run it again to refresh.
 
 ## Usage
 
@@ -112,7 +125,7 @@ cp opencode/agents/*.md ~/.config/opencode/agent/
 
 Notes:
 
-- `opencode.json` disables the built-in `build` and `plan` agents and makes `minimal` the default. Switch to `architect` or `plan-karp` in the TUI when you want guidance.
+- `opencode.json` disables the built-in `build` and `plan` agents and makes `minimal` the default. Switch to `orchestrator` in the TUI when you want delegated work.
 
 - The `instructions` paths point at `~/.config/opencode/working-dir.md` (work only inside the working directory) and `~/.agents/skills/ste-writing/ste-always-on.md` (use STE in prose). Both files ship with this repo. `working-dir.md` is in `opencode/`, and the STE file ships with the `ste-writing` skill. Edit the paths if your files live elsewhere.
 
@@ -122,16 +135,14 @@ Notes:
 
 #### OpenCode permissions
 
-OpenCode asks for approval when a tool touches a path outside the project working directory. Global skills in `~/.agents/skills/` are outside every project directory, so the agent can load a skill but gets a permission prompt when it reads or runs the skill's support files (templates, scripts, images). Add a `permission` block to the global config to allow the skill folders:
+OpenCode asks for approval when a tool touches a path outside the project working directory. Global skills in `~/.agents/skills/` are outside every project directory. The agent can load a skill, but it gets a permission prompt when it reads the support files of the skill. These files are templates, scripts, and images. Add a `permissions` block to the global config to allow the skill folders:
 
 ```jsonc
 {
-  "permission": {
-    "external_directory": {
-      "~/.agents/**": "allow",
-      "<path-to-this-repo>/skills/**": "allow"
-    }
-  }
+  "permissions": [
+    { "action": "external_directory", "resource": "~/.agents/**", "effect": "allow" },
+    { "action": "external_directory", "resource": "<path-to-this-repo>/skills/**", "effect": "allow" }
+  ]
 }
 ```
 
@@ -143,12 +154,10 @@ The rule set grants the same read and edit rights as the working directory. Add 
 
 ```jsonc
 {
-  "permission": {
-    "edit": {
-      "~/.agents/**": "deny",
-      "<path-to-this-repo>/skills/**": "deny"
-    }
-  }
+  "permissions": [
+    { "action": "edit", "resource": "~/.agents/**", "effect": "deny" },
+    { "action": "edit", "resource": "<path-to-this-repo>/skills/**", "effect": "deny" }
+  ]
 }
 ```
 
@@ -163,7 +172,7 @@ Paste this into your agent to install the repo:
 > 1. **Skills:** for each skill in `skills/`, symlink the directory into `~/.agents/skills/` for a global install, or `.agents/skills/` for a project install. The harnesses opencode, omp, pi, muse code, deepseek dsh, and codex read skills from these folders. Install the ones you want.
 > 2. **OpenCode config:** back up any existing `~/.config/opencode/opencode.json`, then copy `opencode/opencode.json` and `opencode/working-dir.md` into `~/.config/opencode/`, and `opencode/agents/*.md` into `~/.config/opencode/agent/` (create the `agent/` directory if needed).
 > 3. **Paths:** the `instructions` in `opencode.json` reference `~/.config/opencode/working-dir.md` and `~/.agents/skills/ste-writing/ste-always-on.md`. Make sure both files exist: the working-dir copy from step 2 and the `ste-writing` skill symlink from step 1.
-> 4. **OpenCode permissions:** opencode asks for approval when a tool touches a path outside the project working directory. Add a `permission` block to `~/.config/opencode/opencode.json` with `external_directory` allow rules for `~/.agents/**` and `<path-to-this-repo>/skills/**` (the real clone path). The rules must name the real target paths of the symlinks, not the symlinks themselves. See "OpenCode permissions" in the README for the exact block and the optional `edit` deny rules.
+> 4. **OpenCode permissions:** opencode asks for approval when a tool touches a path outside the project working directory. Add a `permissions` block to `~/.config/opencode/opencode.json` with `external_directory` allow rules for `~/.agents/**` and `<path-to-this-repo>/skills/**` (the real clone path). The rules must name the real target paths of the symlinks, not the symlinks themselves. See "OpenCode permissions" in the README for the exact block and the optional `edit` deny rules.
 
 Claude does not read `.agents/`. It reads `.claude/skills/` and `~/.claude/skills/`, and its memory file is `CLAUDE.md` instead of `AGENTS.md`. Symlink the skills into `~/.claude/skills/` if you use Claude.
 

@@ -5,12 +5,15 @@
     "~/.config/opencode/working-dir.md",
     "~/.agents/skills/ste-writing/ste-always-on.md"
   ],
-  "agent": {
+  "permissions": [
+    { "action": "external_directory", "resource": "~/.agents/**", "effect": "allow" }
+  ],
+  "agents": {
     "build": {
-      "disable": true
+      "disabled": true
     },
     "plan": {
-      "disable": true
+      "disabled": true
     }
   }
 }
