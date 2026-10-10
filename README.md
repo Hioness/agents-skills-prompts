@@ -6,18 +6,60 @@ It is not a prescription. Obviously, you get to use these tools however you want
 
 ## Made for OpenCode
 
-The `opencode/` folder is specific config for opencode.
+The `opencode/` folder is the OpenCode config bundle. Copy it into `~/.config/opencode/`.
 
-- `opencode.json` contains the project config: the default agent, disabled built-in agents, and the extra instructions each agent loads.
-- `agents/` contains the agent prompts: the primaries `minimal.md` and `orchestrator.md`, and the subagent `reviewer.md`.
+| File | What it does |
+|---|---|
+| `opencode.json` | The config: default agent, disabled built-ins, always-on instructions, and path permissions |
+| `working-dir.md` | Always-on directive. Work only inside the current working directory |
+| `agents/minimal.md` | Primary agent. No instructions |
+| `agents/orchestrator.md` | Primary agent. Delegates work and picks a model per subagent |
+| `agents/reviewer.md` | Subagent. Reviews changes and cannot edit |
 
-Earlier versions of this repo used prompts inspired by the [KINGMODE prompt](https://github.com/aicodeking/yt-tutorial/blob/main/gemini-king-mode.md) and [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills). Modern models need less prompting, so those prompts are gone. The repo now ships a bare `minimal` agent and an `orchestrator` that delegates. The `orchestrator` reads a model policy that you build with the agent.
+The bundle no longer ships the ARCHITECT, SUPER-KARP, PLAN-KARP, or LOOP prompts. Modern models align well enough to work from a short prompt, and the orchestrator covers delegation. Earlier versions borrowed from the [KINGMODE prompt](https://github.com/aicodeking/yt-tutorial/blob/main/gemini-king-mode.md) and [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills).
 
-These prompts mostly help dumber or older models. Many models in the present day do just as well, or better, with no prompt at all. I would say this is the earliest cutoff point to ignore the prompts and use minimal. This matches the vibes I have seen online. Your results may vary:
+### Agent topology
+
+You talk to two agents. The rest work behind them.
+
+| Agent | Mode | Role |
+|---|---|---|
+| `minimal` | primary | The default. A bare prompt for quick work |
+| `orchestrator` | primary | Splits a task, picks a model per subagent, and verifies the result |
+| `reviewer` | subagent | Read-only critic. The orchestrator calls it, never you |
+| `explore` | subagent | Built-in. Fast read-only search |
+| `general` | subagent | Built-in. General multi-step work |
+
+### Permission model
+
+The orchestrator leads, so it cannot edit code. That rule stops it from doing the work itself.
+
+- `orchestrator`: it cannot edit files, except the model policy. It can run shell commands, so it can build and test. It may launch only `explore`, `general`, and `reviewer`.
+- `reviewer`: it cannot edit files. It reports findings only.
+- `minimal`: it has full tools, because you drive it directly.
+
+### Model policy
+
+The orchestrator picks a model for each subagent. It reads the model policy first. The policy maps a task role to a model and a fallback. It holds your intent, not a fixed list of models.
+
+The orchestrator reads the file in this order:
+
+1. `.opencode/model-policy.md` in the current repo.
+2. `~/.agents/model-policy.md`.
+
+A project file replaces the global file. The two files do not merge.
+
+Build the file with the `model-policy` skill. The skill lists the live models with `opencode models`, asks your priorities and constraints, and writes the file. Run it again to refresh. The `working-dir.md` directive allows the agent to read and write `~/.agents/model-policy.md`. It is the one path outside the working directory that the agent may touch.
+
+If a model name is stale, the tool rejects it at spawn. The orchestrator picks a fallback from the policy and continues.
+
+### When minimal is enough
+
+Modern models align well enough to work from `minimal`. The heavy prompts are gone. This is the level where I stop adding instructions:
 
 - Opus-4.5 +
 - GPT-5.4 + (not 5.4-mini, 5.6-Luna is fine)
-- Gemini-3.5 still needs them (3.6+ may work, I have not tested)
+- Gemini-3.5 may still want more guidance (3.6+ may work, I have not tested)
 - Kimi-K2.6 +
 - GLM-5.2 +
 - Deepseek-v4-flash-0731 +
@@ -62,34 +104,6 @@ Credits:
 - The nub CLI lives at [nubjs.com](https://nubjs.com/).
 - The original serif-text skill and implementation follow [this video](https://youtu.be/uJblcC4lKYw?si=ZtCOycYKkZ4iWFpJ), which I have since refined.
 
-## Agent system prompts
-
-The agent prompts live in `opencode/agents/`. See [Made for OpenCode](#made-for-opencode) above for where they came from.
-
-| Agent | Purpose |
-|---|---|
-| orchestrator | Reads the model policy, splits the work, picks a model per subagent, and verifies the result |
-| minimal | Bare-bones primary agent with no instructions |
-
-| Agent | Purpose |
-|---|---|
-| reviewer | Read-only critic. Runs on a different model than the writer |
-
-You talk to `orchestrator` and `minimal`. The `reviewer` runs behind them. The built-in `explore` and `general` subagents cover search and general work.
-
-## Model policy
-
-The orchestrator picks a model for each subagent. It reads the model policy first. The policy is a small Markdown file that maps a task role to a model and a fallback. It holds your intent, not a fixed list of models.
-
-The orchestrator reads the file in this order:
-
-1. `.opencode/model-policy.md` in the current repo.
-2. `~/.agents/model-policy.md`.
-
-A project file replaces the global file. The two files do not merge.
-
-Build the file with the `model-policy` skill. The skill lists the live models with `opencode models`, asks your priorities and constraints, and writes the file. Run it again to refresh.
-
 ## Usage
 
 ### Skills in any harness
@@ -121,21 +135,22 @@ mkdir -p ~/.config/opencode/agent
 cp opencode/opencode.json ~/.config/opencode/opencode.json
 cp opencode/working-dir.md ~/.config/opencode/working-dir.md
 cp opencode/agents/*.md ~/.config/opencode/agent/
+rm -f ~/.config/opencode/agent/{architect,super-karp,plan-karp,loop}.md
+ln -s <path-to-this-repo>/skills/model-policy ~/.agents/skills/model-policy
 ```
 
 Notes:
 
-- `opencode.json` disables the built-in `build` and `plan` agents and makes `minimal` the default. Switch to `orchestrator` in the TUI when you want delegated work.
-
+- `opencode.json` makes `minimal` the default and disables the built-in `build` and `plan` agents. Switch to `orchestrator` in the TUI when you want delegated work.
+- `opencode.json` also allows reads under `~/.agents/**`. Global skills and the model policy file then load without a permission prompt.
 - The `instructions` paths point at `~/.config/opencode/working-dir.md` (work only inside the working directory) and `~/.agents/skills/ste-writing/ste-always-on.md` (use STE in prose). Both files ship with this repo. `working-dir.md` is in `opencode/`, and the STE file ships with the `ste-writing` skill. Edit the paths if your files live elsewhere.
-
+- The `model-policy` symlink lets the orchestrator build the policy on demand. Without it, the orchestrator tells you to build the policy by hand.
 - The config carries no plugins and no MCP servers. Add your own.
-
-- Copying overwrites any existing `opencode.json`. Back it up first if you have a personal config. The `default_agent` and `agent` settings assume the agent files are present. Adjust them if you copy only part of the config.
+- Copying overwrites any existing `opencode.json`. Back it up first if you have a personal config. The `default_agent` and `agents` settings assume the agent files are present. Adjust them if you copy only part of the config.
 
 #### OpenCode permissions
 
-OpenCode asks for approval when a tool touches a path outside the project working directory. Global skills in `~/.agents/skills/` are outside every project directory. The agent can load a skill, but it gets a permission prompt when it reads the support files of the skill. These files are templates, scripts, and images. Add a `permissions` block to the global config to allow the skill folders:
+OpenCode asks for approval when a tool touches a path outside the project working directory. Global skills in `~/.agents/skills/` are outside every project directory. The agent can load a skill. It gets a permission prompt when it reads the support files of the skill. These files are templates, scripts, and images. Add a `permissions` block to the global config to allow the skill folders:
 
 ```jsonc
 {
@@ -169,8 +184,8 @@ Paste this into your agent to install the repo:
 
 > Clone `https://github.com/Hioness/agents-skills-prompts.git` to a directory of your choice.
 
-> 1. **Skills:** for each skill in `skills/`, symlink the directory into `~/.agents/skills/` for a global install, or `.agents/skills/` for a project install. The harnesses opencode, omp, pi, muse code, deepseek dsh, and codex read skills from these folders. Install the ones you want.
-> 2. **OpenCode config:** back up any existing `~/.config/opencode/opencode.json`, then copy `opencode/opencode.json` and `opencode/working-dir.md` into `~/.config/opencode/`, and `opencode/agents/*.md` into `~/.config/opencode/agent/` (create the `agent/` directory if needed).
+> 1. **Skills:** for each skill in `skills/`, symlink the directory into `~/.agents/skills/` for a global install, or `.agents/skills/` for a project install. The harnesses opencode, omp, pi, muse code, deepseek dsh, and codex read skills from these folders. Install the ones you want, including `model-policy`.
+> 2. **OpenCode config:** back up any existing `~/.config/opencode/opencode.json`, then copy `opencode/opencode.json` and `opencode/working-dir.md` into `~/.config/opencode/`, and `opencode/agents/*.md` into `~/.config/opencode/agent/` (create the `agent/` directory if needed). Remove the old `architect.md`, `super-karp.md`, `plan-karp.md`, and `loop.md` files if they are present.
 > 3. **Paths:** the `instructions` in `opencode.json` reference `~/.config/opencode/working-dir.md` and `~/.agents/skills/ste-writing/ste-always-on.md`. Make sure both files exist: the working-dir copy from step 2 and the `ste-writing` skill symlink from step 1.
 > 4. **OpenCode permissions:** opencode asks for approval when a tool touches a path outside the project working directory. Add a `permissions` block to `~/.config/opencode/opencode.json` with `external_directory` allow rules for `~/.agents/**` and `<path-to-this-repo>/skills/**` (the real clone path). The rules must name the real target paths of the symlinks, not the symlinks themselves. See "OpenCode permissions" in the README for the exact block and the optional `edit` deny rules.
 

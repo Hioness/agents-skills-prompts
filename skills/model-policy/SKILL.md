@@ -12,6 +12,10 @@ models. The `models` tool holds the live list.
 The orchestrator reads the file before it picks a model for a subagent. This
 skill builds and refreshes the file. It is OpenCode-specific.
 
+The OpenCode `working-dir.md` directive allows the agent to read and write
+`~/.agents/model-policy.md`. It is the one path outside the working directory
+that the agent may touch.
+
 ## Where the file lives
 
 The orchestrator reads the file in this order:
