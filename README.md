@@ -40,7 +40,7 @@ The orchestrator leads, so it cannot edit code. That rule stops it from doing th
 
 ### Model policy
 
-The orchestrator picks a model for each subagent. It reads the model policy first. The policy maps a task role to a model and a fallback. It holds your intent, not a fixed list of models.
+The orchestrator picks a model for each subagent. It reads the model policy first. The policy maps a task role to a model and a fallback. It holds your intent; an approved list is a valid hard constraint, but the live list comes from the `opencode.models` tool. Write refs in full: `provider/model` or `provider/model#variant`.
 
 The orchestrator reads the file in this order:
 
@@ -51,7 +51,7 @@ A project file replaces the global file. The two files do not merge.
 
 Build the file with the `model-policy` skill. The skill lists the live models with `opencode models`, asks your priorities and constraints, and writes the file. Run it again to refresh. The `working-dir.md` directive allows the agent to read and write `~/.agents/model-policy.md`. It is the one path outside the working directory that the agent may touch.
 
-If a model name is stale, the tool rejects it at spawn. The orchestrator picks a fallback from the policy and continues.
+If a ref is stale or malformed, the tool rejects it at spawn. The orchestrator picks a fallback from the policy and continues.
 
 ### When minimal is enough
 

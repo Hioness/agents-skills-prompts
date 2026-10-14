@@ -6,8 +6,9 @@ description: "Build or refresh the model policy for subagent models. Use during 
 # model-policy
 
 The model policy is a small file. It maps a task role to a model and a
-fallback. It records what the user wants. It does not hold a frozen list of
-models. The `models` tool holds the live list.
+fallback. It records what the user wants. It holds no live model list of its
+own; the `opencode.models` tool holds that. It may still hold an approved
+list as a hard constraint.
 
 ## When to run
 
@@ -62,8 +63,8 @@ default for each question, so the user can accept it and move on.
    model list? Is there a daily spend cap?
 5. Ask the priorities. Rank cost, speed, quality, and privacy.
 6. Ask the role map. For each role, offer the available models as choices.
-   The roles are orchestrator, search, implementation, review, bulk, and
-   sensitive.
+   The roles are orchestrator, search, bulk, implementation, implementation
+   (complex), design, review, review (fourth opinion), and sensitive.
 7. Ask the behavior. When does the agent escalate? Who may swap models, the
    user or the orchestrator?
 8. Write the file. Fill each field in `template.md`.
@@ -71,9 +72,9 @@ default for each question, so the user can accept it and move on.
 
 ## Refresh
 
-Run the setup again. Keep the notes and the constraints. Update the model IDs
-and the `refreshed` date. Remove a model that no longer appears in
-`opencode models`.
+Run the setup again. Keep the notes and the constraints. Update the model IDs,
+the variants, and the `refreshed` date. Remove a model that no longer appears
+in `opencode models`, and check each variant with the `opencode.models` tool.
 
 ## The hands-off path
 
@@ -85,7 +86,10 @@ file.
 
 ## Rules
 
-- Never invent a model ID. Use a name from `opencode models`.
+- Never invent a model ID. Use a name from `opencode models` or the
+  `opencode.models` tool.
+- Write model refs in full: `provider/model` or `provider/model#variant`.
+  Bare model IDs are rejected at spawn.
 - Write a constraint only when the user states it.
 - Keep the file short.
 - Do not write secrets into the file. Use model names only.

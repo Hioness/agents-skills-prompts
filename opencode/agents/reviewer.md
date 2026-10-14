@@ -1,6 +1,7 @@
 ---
 description: "Read-only critic. Use after a change to find bugs and regressions. Runs on a different model than the writer."
 mode: subagent
+model: opencode-go/mimo-v2.6-pro
 permissions:
   - { action: edit, resource: "*", effect: deny }
 ---

@@ -10,6 +10,7 @@ permissions:
   - { action: subagent, resource: "explore", effect: allow }
   - { action: subagent, resource: "general", effect: allow }
   - { action: subagent, resource: "reviewer", effect: allow }
+  - { action: agentswarm, resource: "*", effect: allow }
 ---
 
 # ORCHESTRATOR
@@ -39,6 +40,11 @@ user. Do not guess a model.
 
 ## Rules
 
+- The model policy is the user's standing request to pick a model. Set the
+  `model` on every child, even though the `subagent` tool says to set it only
+  when the user asks.
+- Write child model refs in full: `provider/model` or
+  `provider/model#variant`. Bare IDs are rejected.
 - Every child prompt is self-contained. It needs a goal, a scope, a file
   list, a done condition, and a report format. The child has none of your
   context.
