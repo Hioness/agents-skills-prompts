@@ -1,5 +1,3 @@
-# prompts&config
-
 This repository contains skills and workflows that I have found useful when using agentic harnesses. I use them for work, for school, and for managing my computer. I also use them for side-projects that involve code, websites, or OSS forks that I start.
 
 It is not a prescription. Obviously, you get to use these tools however you want, and modify them however you want. I found them useful in the way I set them up. I hope you do too.
